@@ -1,19 +1,30 @@
 package screen.sidebar
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.filled.DoubleArrow
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import image_loader.ImageLoader
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 @Preview
@@ -65,12 +76,98 @@ fun SearchBar() {
             .height(79.dp)
             .border(BorderStroke(1.dp, color = Color(0xFFE5E5E5)))
     ) {
+        Row(
+            modifier = Modifier.fillMaxHeight(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+            ) {
 
+            var text by remember { mutableStateOf("") }
+
+            TextField(
+                value = text,
+                onValueChange = { text = it},
+                modifier = Modifier.padding(start = 8.dp),
+                singleLine = true,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null
+                    )
+                }
+            )
+
+            Icon(
+                imageVector = Icons.Default.DoubleArrow,
+                tint = Color(0xFF99DCEC),
+                contentDescription = null,
+                modifier = Modifier
+                    .rotate(180.0f)
+                    .size(40.dp)
+            )
+        }
     }
 }
 
 @Composable
 fun ContactScreen() {
+    val list = (1..15).toList()
+    val scrollState = rememberLazyListState()
+
+    Box{
+        LazyColumn(state = scrollState) {
+            items(list) { n ->
+                Contact(n)
+            }
+        }
+
+        VerticalScrollbar(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .fillMaxHeight(),
+            adapter = rememberScrollbarAdapter(
+                scrollState = scrollState
+            )
+        )
+    }
+
+}
+
+@Composable
+fun Contact(number: Int) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(87.dp)
+            .padding(top = 8.dp)
+            .border(BorderStroke(1.dp, color = Color(0xFFE5E5E5)))
+    ) {
+        Row {
+            NetworkImage(
+                url = "https://lh3.googleusercontent.com/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc=w600"
+            )
+        }
+    }
+}
+
+@Composable
+fun NetworkImage(
+    url: String,
+    modifier: Modifier = Modifier,
+) {
+    val bitmap: ImageBitmap? by produceState<ImageBitmap?>(null) {
+        value = withContext(Dispatchers.IO) {
+            ImageLoader.load(url)
+        }
+    }
+
+    if(bitmap != null) {
+        Image(
+            bitmap = bitmap!!,
+            contentDescription = null,
+            modifier = modifier
+        )
+    }
 
 }
 

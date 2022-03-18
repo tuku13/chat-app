@@ -18,6 +18,11 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
+    implementation(compose.materialIconsExtended)
+    implementation(compose.desktop.common)
+
+    implementation("io.ktor:ktor-client-core:1.6.8")
+    implementation("io.ktor:ktor-client-okhttp:1.6.8")
 }
 
 tasks.withType<KotlinCompile> {
