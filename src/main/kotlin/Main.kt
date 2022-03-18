@@ -37,6 +37,7 @@ fun App() {
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
+        title = "Chat App",
         state = WindowState(size = DpSize(1024.dp, 768.dp))
     ) {
         App()
