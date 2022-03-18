@@ -4,8 +4,8 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -13,7 +13,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DoubleArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.*
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -21,23 +24,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import image_loader.ImageLoader
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
 @Preview
-fun FullSizeSideBar() {
+fun FullSizeSideBar(
+    collapseIconOnClick: () -> Unit,
+) {
     Column(
         modifier = Modifier.width(328.dp)
             .fillMaxHeight()
             .border(BorderStroke(1.dp, color = Color(0xFFE5E5E5)))
     ) {
-        SearchBar()
+        var query by remember { mutableStateOf("") }
+        SearchBar(
+            onValueChange = { query = it },
+            collapseIconOnClick = collapseIconOnClick
+        )
 
         Box(modifier = Modifier.weight(1.0f)) {
-            ContactScreen()
+            ContactScreen(query = query)
         }
 
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -69,7 +76,10 @@ fun FullSizeSideBar() {
 }
 
 @Composable
-fun SearchBar() {
+fun SearchBar(
+    onValueChange: (String) -> Unit,
+    collapseIconOnClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -80,13 +90,16 @@ fun SearchBar() {
             modifier = Modifier.fillMaxHeight(),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
-            ) {
+        ) {
 
             var text by remember { mutableStateOf("") }
 
             TextField(
                 value = text,
-                onValueChange = { text = it},
+                onValueChange = {
+                    text = it
+                    onValueChange(it)
+                },
                 modifier = Modifier.padding(start = 8.dp),
                 singleLine = true,
                 leadingIcon = {
@@ -104,20 +117,24 @@ fun SearchBar() {
                 modifier = Modifier
                     .rotate(180.0f)
                     .size(40.dp)
+                    .clickable { collapseIconOnClick() }
             )
         }
     }
 }
 
 @Composable
-fun ContactScreen() {
-    val list = (1..15).toList()
+fun ContactScreen(query: String) {
+    val list = listOf("Pityu", "Jozsi", "Bela", "Istvan", "Bence", "Cecilia")
     val scrollState = rememberLazyListState()
 
-    Box{
+    Box {
         LazyColumn(state = scrollState) {
-            items(list) { n ->
-                Contact(n)
+            items(list.size) { index ->
+                val name = list[index]
+                if(name.lowercase().contains(query.lowercase())) {
+                    Contact(name)
+                }
             }
         }
 
@@ -134,7 +151,8 @@ fun ContactScreen() {
 }
 
 @Composable
-fun Contact(number: Int) {
+fun Contact(name: String) {
+    val message = "Asdasdasdasdasdasdasdsadasdsadasdasddasdasdasdasdasdasdasdasdsadasdsadasd"
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -143,9 +161,43 @@ fun Contact(number: Int) {
             .border(BorderStroke(1.dp, color = Color(0xFFE5E5E5)))
     ) {
         Row {
-            NetworkImage(
-                url = "https://lh3.googleusercontent.com/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc=w600"
-            )
+            Box(modifier = Modifier.padding(8.dp)) {
+                NetworkImage(
+                    url = "https://lh3.googleusercontent.com/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc=w600",
+                    modifier = Modifier.clip(CircleShape)
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(8.dp)
+                    .weight(1.0f)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = name,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "13:59",
+                        fontSize = 12.sp,
+                        color = Color(0xFF888888)
+                    )
+                }
+                Box(modifier = Modifier.width(199.dp).padding(top = 8.dp)) {
+                    Text(
+                        maxLines = 2,
+                        text = "${message.take(60)}...",
+                        fontSize = 14.sp,
+                        color = Color(0xFF888888)
+                    )
+                }
+            }
         }
     }
 }
@@ -161,12 +213,14 @@ fun NetworkImage(
         }
     }
 
-    if(bitmap != null) {
+    if (bitmap != null) {
         Image(
             bitmap = bitmap!!,
             contentDescription = null,
-            modifier = modifier
+            modifier = modifier,
         )
+    } else {
+        Box(modifier = Modifier.height(79.dp).width(79.dp))
     }
 
 }

@@ -13,7 +13,14 @@ fun MainScreen() {
     var collapsed by remember { mutableStateOf(false) }
 
     Row(modifier = Modifier.fillMaxWidth()) {
-        if (collapsed) CollapsedSideBar() else FullSizeSideBar()
-        ConversationScreen()
+        if (collapsed) {
+            CollapsedSideBar(
+                collapseIconOnClick = { collapsed = !collapsed }
+            )
+        } else {
+            FullSizeSideBar(
+                collapseIconOnClick = { collapsed = !collapsed }
+            )
+        }
     }
 }
