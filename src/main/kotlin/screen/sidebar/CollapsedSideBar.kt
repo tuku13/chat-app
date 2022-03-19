@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import theme.Theme
 
 @Composable
 fun CollapsedSideBar(
@@ -28,7 +29,8 @@ fun CollapsedSideBar(
         modifier = Modifier
             .fillMaxHeight()
             .width(79.dp)
-            .border(BorderStroke(1.dp, color = Color(0xFFE5E5E5))),
+            .background(Theme.colors.background)
+            .border(BorderStroke(1.dp, color = Theme.colors.border)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -36,13 +38,13 @@ fun CollapsedSideBar(
             modifier = Modifier
                 .height(79.dp)
                 .fillMaxWidth()
-                .border(BorderStroke(1.dp, color = Color(0xFFE5E5E5)))
+                .border(BorderStroke(1.dp, color = Theme.colors.border))
                 .align(Alignment.CenterHorizontally)
                 .clickable { collapseIconOnClick() }
         ) {
             Icon(
                 imageVector = Icons.Default.DoubleArrow,
-                tint = Color(0xFF99DCEC),
+                tint = Theme.colors.blue,
                 contentDescription = null,
                 modifier = Modifier
                     .size(40.dp)
@@ -60,7 +62,7 @@ fun CollapsedSideBar(
                     Box(
                         modifier = Modifier
                             .border(
-                                border = BorderStroke(1.dp, color = Color(0xFFE5E5E5)),
+                                border = BorderStroke(1.dp, color = Theme.colors.border),
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .padding(horizontal = 8.dp)

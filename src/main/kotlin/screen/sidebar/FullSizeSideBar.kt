@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import image_loader.ImageLoader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import theme.Theme
 
 @Composable
 @Preview
@@ -35,7 +37,8 @@ fun FullSizeSideBar(
     Column(
         modifier = Modifier.width(328.dp)
             .fillMaxHeight()
-            .border(BorderStroke(1.dp, color = Color(0xFFE5E5E5)))
+            .background(Theme.colors.background)
+            .border(BorderStroke(1.dp, color = Theme.colors.border))
     ) {
         var query by remember { mutableStateOf("") }
         SearchBar(
@@ -51,7 +54,7 @@ fun FullSizeSideBar(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(BorderStroke(1.dp, color = Color(0xFFE5E5E5))),
+                    .border(BorderStroke(1.dp, color = Theme.colors.body)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
@@ -59,14 +62,14 @@ fun FullSizeSideBar(
 
                 ColoredButton(
                     text = "Create or Join Group",
-                    color = Color(0xFF99ECAF)
+                    color = Theme.colors.green
                 )
 
                 Box(modifier = Modifier.height(16.dp))
 
                 ColoredButton(
                     text = "New Contact",
-                    color = Color(0xFF99DCEC)
+                    color = Theme.colors.blue
                 )
 
                 Box(modifier = Modifier.height(16.dp))
@@ -84,7 +87,7 @@ fun SearchBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(79.dp)
-            .border(BorderStroke(1.dp, color = Color(0xFFE5E5E5)))
+            .border(BorderStroke(1.dp, color = Theme.colors.border))
     ) {
         Row(
             modifier = Modifier.fillMaxHeight(),
@@ -100,19 +103,30 @@ fun SearchBar(
                     text = it
                     onValueChange(it)
                 },
-                modifier = Modifier.padding(start = 8.dp),
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .border(
+                        border = BorderStroke(0.dp, Color.Transparent),
+                        shape = CutCornerShape(0)
+                    ),
                 singleLine = true,
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Theme.colors.border,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = Theme.colors.body
                     )
                 }
             )
 
             Icon(
                 imageVector = Icons.Default.DoubleArrow,
-                tint = Color(0xFF99DCEC),
+                tint = Theme.colors.blue,
                 contentDescription = null,
                 modifier = Modifier
                     .rotate(180.0f)
@@ -158,7 +172,7 @@ fun Contact(name: String) {
             .fillMaxWidth()
             .height(87.dp)
             .padding(top = 8.dp)
-            .border(BorderStroke(1.dp, color = Color(0xFFE5E5E5)))
+            .border(BorderStroke(1.dp, color = Theme.colors.border))
     ) {
         Row {
             Box(modifier = Modifier.padding(8.dp)) {
@@ -181,12 +195,13 @@ fun Contact(name: String) {
                     Text(
                         text = name,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = Theme.colors.title
                     )
                     Text(
                         text = "13:59",
                         fontSize = 12.sp,
-                        color = Color(0xFF888888)
+                        color = Theme.colors.body
                     )
                 }
                 Box(modifier = Modifier.width(199.dp).padding(top = 8.dp)) {
@@ -194,7 +209,7 @@ fun Contact(name: String) {
                         maxLines = 2,
                         text = "${message.take(60)}...",
                         fontSize = 14.sp,
-                        color = Color(0xFF888888)
+                        color = Theme.colors.body
                     )
                 }
             }
