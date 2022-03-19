@@ -6,23 +6,21 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachFile
-import androidx.compose.material.icons.filled.Dehaze
-import androidx.compose.material.icons.filled.ImageSearch
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import theme.Theme
@@ -105,14 +103,15 @@ fun BottomBar(theme: Theme) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(79.dp)
+            .wrapContentHeight()
             .border(BorderStroke(1.dp, color = theme.border))
     ) {
         Row(
             modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+                .fillMaxWidth()
+//                .padding(vertical = 16.dp)
+                .wrapContentHeight(),
+            verticalAlignment = Alignment.Bottom,
         ) {
 
             Icon(
@@ -121,6 +120,7 @@ fun BottomBar(theme: Theme) {
                 contentDescription = null,
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
+                    .padding(bottom = 8.dp)
                     .size(40.dp)
                     .clickable { println("Image") }
             )
@@ -131,30 +131,42 @@ fun BottomBar(theme: Theme) {
                 contentDescription = null,
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
+                    .padding(bottom = 8.dp)
                     .size(40.dp)
                     .clickable { println("GIF") }
             )
 
             var message by remember { mutableStateOf("") }
 
-            TextField(
-                value = message,
-                onValueChange = { message = it },
-                modifier = Modifier
-                    .weight(1.0f)
-                    .border(
-                        border = BorderStroke(0.dp, Color.Transparent),
-                        shape = CutCornerShape(0)
+            CompositionLocalProvider(
+                LocalTextSelectionColors provides TextSelectionColors(
+                    handleColor = theme.blue,
+                    backgroundColor = theme.blue
+                )
+            ) {
+                TextField(
+                    value = message,
+                    onValueChange = { message = it },
+                    modifier = Modifier
+                        .weight(1.0f)
+                        .border(
+                            border = BorderStroke(0.dp, Color.Transparent),
+                            shape = CutCornerShape(0)
+                        ),
+                    shape = RoundedCornerShape(0),
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = theme.body,
+                        cursorColor = theme.border,
+                        placeholderColor = theme.body,
+                        backgroundColor = theme.background,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
                     ),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = theme.border,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                placeholder = {
-                    Text("Write a message")
-                }
-            )
+                    placeholder = {
+                        Text("Write a message")
+                    }
+                )
+            }
 
             Icon(
                 tint = theme.blue,
@@ -162,6 +174,7 @@ fun BottomBar(theme: Theme) {
                 contentDescription = null,
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
+                    .padding(bottom = 8.dp)
                     .size(40.dp)
                     .clickable {
                         message = ""

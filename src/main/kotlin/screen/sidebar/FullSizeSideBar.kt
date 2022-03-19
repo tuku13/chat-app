@@ -9,7 +9,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.*
+import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DoubleArrow
@@ -21,8 +24,11 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import image_loader.ImageLoader
@@ -105,36 +111,49 @@ fun SearchBar(
 
             var text by remember { mutableStateOf("") }
 
-            TextField(
-                value = text,
-                onValueChange = {
-                    text = it
-                    onValueChange(it)
-                },
-                modifier = Modifier
-                    .height(40.dp)
-                    .padding(start = 8.dp)
-                    .border(
-                        border = BorderStroke(0.dp, Color.Transparent),
-                        shape = CutCornerShape(0)
+            CompositionLocalProvider(
+                LocalTextSelectionColors provides TextSelectionColors(
+                    handleColor = theme.blue,
+                    backgroundColor = theme.blue
+                )
+            ) {
+                TextField(
+                    value = text,
+                    onValueChange = {
+                        text = it
+                        onValueChange(it)
+                    },
+                    textStyle = TextStyle(
+
                     ),
-                singleLine = true,
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = theme.border,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null,
-                        tint = theme.body
-                    )
-                },
-                placeholder = {
-                    Text("Search")
-                }
-            )
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .border(
+                            border = BorderStroke(0.dp, Color.Transparent),
+                            shape = CutCornerShape(0)
+                        ),
+                    singleLine = true,
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = theme.body,
+                        cursorColor = theme.cursor,
+                        placeholderColor = theme.body,
+                        backgroundColor = theme.background,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    shape = RoundedCornerShape(0),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            tint = theme.body
+                        )
+                    },
+                    placeholder = {
+                        Text("Search")
+                    }
+                )
+            }
 
             Icon(
                 imageVector = Icons.Default.DoubleArrow,
@@ -161,7 +180,7 @@ fun ContactScreen(
         LazyColumn(state = scrollState) {
             items(list.size) { index ->
                 val name = list[index]
-                if(name.lowercase().contains(query.lowercase())) {
+                if (name.lowercase().contains(query.lowercase())) {
                     Contact(name, theme = theme)
                 }
             }

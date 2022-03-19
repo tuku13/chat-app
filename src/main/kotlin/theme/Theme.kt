@@ -11,7 +11,8 @@ sealed class Theme(
     val body: Color,
     val chatBackground: Color,
     val chatText: Color,
-    val border: Color
+    val border: Color,
+    val cursor: Color
 )
 
 object LightTheme : Theme(
@@ -23,7 +24,8 @@ object LightTheme : Theme(
     body = Color(0xFF858585),
     chatBackground = Color(0xFFC4C4C4),
     chatText = Color(0xFF000000),
-    border = Color(0xFFE5E5E5)
+    border = Color(0xFFE5E5E5),
+    cursor = Color(0xFF000000)
 )
 
 object DarkTheme : Theme(
@@ -35,5 +37,6 @@ object DarkTheme : Theme(
     body = Color(0xFF888888),
     chatBackground = Color(0xFF272727),
     chatText = Color(0xFF888888),
-    border = Color(0xFF272727)
+    border = Color(0xFF272727),
+    cursor = Color(0xFFFFFFFF)
 )
