@@ -18,11 +18,14 @@ import io.ktor.client.response.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import screen.main.MainScreen
+import theme.DarkTheme
+import theme.LightTheme
+import theme.Theme
 
 @Composable
 @Preview
 fun App() {
-    var text by remember { mutableStateOf("Hello, World!") }
+    var theme: Theme by remember { mutableStateOf(LightTheme) }
 
     MaterialTheme {
 //        Button(onClick = {
@@ -30,7 +33,15 @@ fun App() {
 //        }) {
 //            Text(text)
 //        }
-        MainScreen()
+        MainScreen(
+            theme = theme,
+            changeTheme = {
+                theme = when (theme) {
+                    DarkTheme -> LightTheme
+                    LightTheme -> DarkTheme
+                }
+            }
+        )
     }
 }
 

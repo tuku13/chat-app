@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -33,28 +34,34 @@ import theme.Theme
 @Preview
 fun FullSizeSideBar(
     collapseIconOnClick: () -> Unit,
+    theme: Theme
 ) {
     Column(
         modifier = Modifier.width(328.dp)
             .fillMaxHeight()
-            .background(Theme.colors.background)
-            .border(BorderStroke(1.dp, color = Theme.colors.border))
+            .background(theme.background)
+            .border(BorderStroke(1.dp, color = theme.border))
     ) {
         var query by remember { mutableStateOf("") }
+
         SearchBar(
             onValueChange = { query = it },
-            collapseIconOnClick = collapseIconOnClick
+            collapseIconOnClick = collapseIconOnClick,
+            theme = theme
         )
 
         Box(modifier = Modifier.weight(1.0f)) {
-            ContactScreen(query = query)
+            ContactScreen(
+                query = query,
+                theme = theme
+            )
         }
 
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(BorderStroke(1.dp, color = Theme.colors.body)),
+                    .border(BorderStroke(1.dp, color = theme.body)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
@@ -62,14 +69,14 @@ fun FullSizeSideBar(
 
                 ColoredButton(
                     text = "Create or Join Group",
-                    color = Theme.colors.green
+                    color = theme.green
                 )
 
                 Box(modifier = Modifier.height(16.dp))
 
                 ColoredButton(
                     text = "New Contact",
-                    color = Theme.colors.blue
+                    color = theme.blue
                 )
 
                 Box(modifier = Modifier.height(16.dp))
@@ -81,13 +88,14 @@ fun FullSizeSideBar(
 @Composable
 fun SearchBar(
     onValueChange: (String) -> Unit,
-    collapseIconOnClick: () -> Unit
+    collapseIconOnClick: () -> Unit,
+    theme: Theme
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(79.dp)
-            .border(BorderStroke(1.dp, color = Theme.colors.border))
+            .border(BorderStroke(1.dp, color = theme.border))
     ) {
         Row(
             modifier = Modifier.fillMaxHeight(),
@@ -104,6 +112,7 @@ fun SearchBar(
                     onValueChange(it)
                 },
                 modifier = Modifier
+                    .height(40.dp)
                     .padding(start = 8.dp)
                     .border(
                         border = BorderStroke(0.dp, Color.Transparent),
@@ -111,7 +120,7 @@ fun SearchBar(
                     ),
                 singleLine = true,
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Theme.colors.border,
+                    backgroundColor = theme.border,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
@@ -119,14 +128,17 @@ fun SearchBar(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = null,
-                        tint = Theme.colors.body
+                        tint = theme.body
                     )
+                },
+                placeholder = {
+                    Text("Search")
                 }
             )
 
             Icon(
                 imageVector = Icons.Default.DoubleArrow,
-                tint = Theme.colors.blue,
+                tint = theme.blue,
                 contentDescription = null,
                 modifier = Modifier
                     .rotate(180.0f)
@@ -138,7 +150,10 @@ fun SearchBar(
 }
 
 @Composable
-fun ContactScreen(query: String) {
+fun ContactScreen(
+    query: String,
+    theme: Theme
+) {
     val list = listOf("Pityu", "Jozsi", "Bela", "Istvan", "Bence", "Cecilia")
     val scrollState = rememberLazyListState()
 
@@ -147,7 +162,7 @@ fun ContactScreen(query: String) {
             items(list.size) { index ->
                 val name = list[index]
                 if(name.lowercase().contains(query.lowercase())) {
-                    Contact(name)
+                    Contact(name, theme = theme)
                 }
             }
         }
@@ -165,14 +180,17 @@ fun ContactScreen(query: String) {
 }
 
 @Composable
-fun Contact(name: String) {
+fun Contact(
+    name: String,
+    theme: Theme
+) {
     val message = "Asdasdasdasdasdasdasdsadasdsadasdasddasdasdasdasdasdasdasdasdsadasdsadasd"
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(87.dp)
             .padding(top = 8.dp)
-            .border(BorderStroke(1.dp, color = Theme.colors.border))
+            .border(BorderStroke(1.dp, color = theme.border))
     ) {
         Row {
             Box(modifier = Modifier.padding(8.dp)) {
@@ -196,12 +214,12 @@ fun Contact(name: String) {
                         text = name,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Theme.colors.title
+                        color = theme.title
                     )
                     Text(
                         text = "13:59",
                         fontSize = 12.sp,
-                        color = Theme.colors.body
+                        color = theme.body
                     )
                 }
                 Box(modifier = Modifier.width(199.dp).padding(top = 8.dp)) {
@@ -209,7 +227,7 @@ fun Contact(name: String) {
                         maxLines = 2,
                         text = "${message.take(60)}...",
                         fontSize = 14.sp,
-                        color = Theme.colors.body
+                        color = theme.body
                     )
                 }
             }

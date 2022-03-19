@@ -20,7 +20,8 @@ import theme.Theme
 
 @Composable
 fun CollapsedSideBar(
-    collapseIconOnClick: () -> Unit
+    collapseIconOnClick: () -> Unit,
+    theme: Theme
 ) {
     val list = (1..15).toList()
     val scrollState = rememberLazyListState()
@@ -29,8 +30,8 @@ fun CollapsedSideBar(
         modifier = Modifier
             .fillMaxHeight()
             .width(79.dp)
-            .background(Theme.colors.background)
-            .border(BorderStroke(1.dp, color = Theme.colors.border)),
+            .background(theme.background)
+            .border(BorderStroke(1.dp, color = theme.border)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -38,13 +39,13 @@ fun CollapsedSideBar(
             modifier = Modifier
                 .height(79.dp)
                 .fillMaxWidth()
-                .border(BorderStroke(1.dp, color = Theme.colors.border))
+                .border(BorderStroke(1.dp, color = theme.border))
                 .align(Alignment.CenterHorizontally)
                 .clickable { collapseIconOnClick() }
         ) {
             Icon(
                 imageVector = Icons.Default.DoubleArrow,
-                tint = Theme.colors.blue,
+                tint = theme.blue,
                 contentDescription = null,
                 modifier = Modifier
                     .size(40.dp)
@@ -62,7 +63,7 @@ fun CollapsedSideBar(
                     Box(
                         modifier = Modifier
                             .border(
-                                border = BorderStroke(1.dp, color = Theme.colors.border),
+                                border = BorderStroke(1.dp, color = theme.border),
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .padding(horizontal = 8.dp)
