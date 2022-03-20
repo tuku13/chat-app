@@ -25,6 +25,7 @@ dependencies {
 
     implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-client-okhttp:$ktor_version")
+    implementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 }
 

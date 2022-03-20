@@ -12,19 +12,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.features.cookies.*
+import io.ktor.client.features.websocket.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import model.Message
 import screen.authentication.AuthenticationScreen
+import screen.main.MainScreen
+import theme.DarkTheme
 import theme.LightTheme
 import theme.Theme
 import kotlin.random.Random
+
+const val BASE_URL: String = "http://0.0.0.0:9090"
 
 @Composable
 @Preview
 fun App() {
     var theme: Theme by remember { mutableStateOf(LightTheme) }
+    var loggedIn by remember { mutableStateOf(false) }
+
+    val cookiesStorage = remember { AcceptAllCookiesStorage() }
+    val client = remember {
+        HttpClient(CIO) {
+            install(WebSockets)
+
+            install(HttpCookies) {
+                storage = cookiesStorage
+            }
+        }
+    }
 
     MaterialTheme {
 //        Button(onClick = {
@@ -33,17 +53,26 @@ fun App() {
 //            Text(text)
 //        }
 
-        AuthenticationScreen(theme)
+        if(loggedIn) {
+            MainScreen(
+                theme = theme,
+                changeTheme = {
+                    theme = when (theme) {
+                        DarkTheme -> LightTheme
+                        LightTheme -> DarkTheme
+                    }
+                }
+            )
+        } else {
+            AuthenticationScreen(
+                theme = theme,
+                client = client,
+                onLogin = {
+                    loggedIn = true
+                }
+            )
+        }
 
-//        MainScreen(
-//            theme = theme,
-//            changeTheme = {
-//                theme = when (theme) {
-//                    DarkTheme -> LightTheme
-//                    LightTheme -> DarkTheme
-//                }
-//            }
-//        )
     }
 }
 
