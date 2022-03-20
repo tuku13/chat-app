@@ -29,10 +29,10 @@ object LightTheme : Theme(
 )
 
 object DarkTheme : Theme(
-    green = Color(0xFF99ECAF),
-    blue = Color(0xFF99DCEC),
+    green = Color(0xFF136839),
+    blue = Color(0xFF135868),
     background = Color(0xFF36393F),
-    textFieldBackground = Color(0xFF272727),
+    textFieldBackground = Color(0xFF40444B),
     title = Color(0xFFFFFFFF),
     body = Color(0xFF888888),
     chatBackground = Color(0xFF32353B),

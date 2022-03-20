@@ -21,10 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onEach
 import model.Message
+import pollMessages
 import screen.sidebar.NetworkImage
 import theme.Theme
 
@@ -96,50 +99,14 @@ fun Conversation(
     Box(
         modifier = modifier
     ) {
-        var messages = remember {
-            listOf(
-                Message(
-                    username = "Pityu",
-                    text = "dsf8942j789fh27q893hg2g"
-                ),
-                Message(
-                    username = "Béla",
-                    text = "dsf8942jdfgdsfgfhdzqurevhinzegh677777777777792bm68hsgfghw45rt789fh27q893hg2g"
-                ),
-                Message(
-                    username = "Attla",
-                    text = "dsf8dfgs942j7dsf8dfgs942j7dfsdfgg8sdfg9fh27q893hg2dsf8dfgs942j7dfsdfgg8sdfg9fh27q893hg2dfsdfgg8sdfg9fh27q893hg2g"
-                ),
-                Message(
-                    username = "Attila",
-                    text = "d"
-                ),
-                Message(
-                    username = "Attila",
-                    text = "dsf8dfgs942j7dfdfghdfghdfghfghfgdhfdghfgdhfgdhddfghdfghdfghfghfgdhfdghfgdhfgdhddfghdfghdfghfghfgdhfdghfgdhfgdhdsdfgg8sdfg9fh27q893hg2g"
-                ),
-                Message(
-                    username = "Attila",
-                    text = "dsf8dfgs942j7dfghddfghdfghdfghfghfgdhfdghfgdhfgdhddfghdfghdfghfghfgdhfdghfgdhfgdhdfghdfghfghfgdhfdghfgdhfgdhdfsdfgg8sdfg9fh27q893hg2g"
-                ),
-                Message(
-                    username = "Attfgdhila",
-                    text = "dsf8dfgs942j7dfsdfgg8fgdhfdghgdfhgfhsdfg9fh27q893hg2g"
-                ),
-                Message(
-                    username = "Atgfdhla",
-                    text = "dsf8dfgs942j7dfsdfgg8sdfg9fh27q893hg2g"
-                ),
-                Message(
-                    username = "Cukorhegyi Márk",
-                    text = "Meta, metamates, me"
-                ),
-                Message(
-                    username = "Én",
-                    text = "\uD83D\uDE33"
-                ),
 
-            )
+        var messages by remember { mutableStateOf<List<Message>>( emptyList()) }
+
+        LaunchedEffect(Any()) {
+            println("Elindult!!!")
+            pollMessages().collect {
+                messages = listOf(*messages.toTypedArray(), it)
+            }
         }
 
         LazyColumn(
@@ -201,8 +168,9 @@ fun ChatBubble(
                     backgroundColor = if (own) theme.green else theme.chatBackground,
                     shape = RoundedCornerShape(10.dp),
                 ) {
-                    Column() {
+                    Column {
                         Box(modifier = Modifier.height(8.dp))
+
                         if (!own) {
                             Text(
                                 text = message.username,
@@ -216,7 +184,7 @@ fun ChatBubble(
                         Text(
                             text = message.text,
                             fontSize = 14.sp,
-                            color = if(own) Color.Black else theme.chatText,
+                            color = theme.chatText,
                             modifier = Modifier
                                 .padding(horizontal = 8.dp,)
                         )
@@ -253,7 +221,6 @@ fun BottomBar(theme: Theme) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-//                .padding(vertical = 16.dp)
                 .wrapContentHeight(),
             verticalAlignment = Alignment.Bottom,
         ) {

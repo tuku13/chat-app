@@ -296,10 +296,10 @@ fun ColoredButton(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Default.Add, contentDescription = null, tint = Color.Black
+                imageVector = Icons.Default.Add, contentDescription = null, tint = theme.cursor
             )
             Text(
-                text = text, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Black
+                text = text, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = theme.cursor
             )
         }
     }

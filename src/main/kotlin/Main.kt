@@ -12,15 +12,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import io.ktor.client.*
-import io.ktor.client.request.forms.*
-import io.ktor.client.response.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import screen.main.MainScreen
-import theme.DarkTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import model.Message
+import screen.authentication.AuthenticationScreen
 import theme.LightTheme
 import theme.Theme
+import kotlin.random.Random
 
 @Composable
 @Preview
@@ -33,15 +32,18 @@ fun App() {
 //        }) {
 //            Text(text)
 //        }
-        MainScreen(
-            theme = theme,
-            changeTheme = {
-                theme = when (theme) {
-                    DarkTheme -> LightTheme
-                    LightTheme -> DarkTheme
-                }
-            }
-        )
+
+        AuthenticationScreen(theme)
+
+//        MainScreen(
+//            theme = theme,
+//            changeTheme = {
+//                theme = when (theme) {
+//                    DarkTheme -> LightTheme
+//                    LightTheme -> DarkTheme
+//                }
+//            }
+//        )
     }
 }
 
@@ -52,6 +54,19 @@ fun main() = application {
         state = WindowState(size = DpSize(1024.dp, 768.dp))
     ) {
         App()
+    }
+}
+
+fun pollMessages(): Flow<Message> = flow {
+    while (true) {
+        emit(
+            Message(
+                username = "user" + Random.nextInt(1000),
+                text = "x".repeat(Random.nextInt(3, 350)),
+                own = Random.nextBoolean()
+            )
+        )
+        delay(3 * 1000L)
     }
 }
 
