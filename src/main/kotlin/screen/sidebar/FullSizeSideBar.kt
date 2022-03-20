@@ -67,7 +67,7 @@ fun FullSizeSideBar(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(BorderStroke(1.dp, color = theme.body)),
+                    .border(BorderStroke(1.dp, color = theme.border)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
@@ -75,14 +75,16 @@ fun FullSizeSideBar(
 
                 ColoredButton(
                     text = "Create or Join Group",
-                    color = theme.green
+                    color = theme.green,
+                    theme = theme
                 )
 
                 Box(modifier = Modifier.height(16.dp))
 
                 ColoredButton(
                     text = "New Contact",
-                    color = theme.blue
+                    color = theme.blue,
+                    theme = theme
                 )
 
                 Box(modifier = Modifier.height(16.dp))
@@ -281,6 +283,7 @@ fun NetworkImage(
 fun ColoredButton(
     text: String,
     color: Color,
+    theme: Theme,
     onClick: () -> Unit = {}
 ) {
     Button(
@@ -293,10 +296,10 @@ fun ColoredButton(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Default.Add, contentDescription = null
+                imageVector = Icons.Default.Add, contentDescription = null, tint = Color.Black
             )
             Text(
-                text = text, fontWeight = FontWeight.Bold, fontSize = 14.sp
+                text = text, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Black
             )
         }
     }
