@@ -14,45 +14,68 @@ import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.features.cookies.*
-import io.ktor.client.features.websocket.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.cookies.*
+import io.ktor.client.plugins.websocket.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import model.Message
+import org.kodein.di.DI
+import org.kodein.di.bindSingleton
+import org.kodein.di.compose.withDI
+import org.kodein.di.instance
+import repository.RoomRepository
 import screen.authentication.AuthenticationScreen
 import screen.main.MainScreen
+import screen.main.MainViewModel
 import theme.DarkTheme
 import theme.LightTheme
 import theme.Theme
 import kotlin.random.Random
-
 const val BASE_URL: String = "http://0.0.0.0:9090"
 
-@Composable
-@Preview
-fun App() {
-    var theme: Theme by remember { mutableStateOf(LightTheme) }
-    var loggedIn by remember { mutableStateOf(false) }
+val di = DI {
+    bindSingleton<RoomRepository> {
+        val client: HttpClient by di.instance()
+        RoomRepository(client)
+    }
 
-    val cookiesStorage = remember { AcceptAllCookiesStorage() }
-    val client = remember {
+    bindSingleton<CookiesStorage> { AcceptAllCookiesStorage() }
+
+    bindSingleton<HttpClient> {
+        val cookiesStorage: CookiesStorage by di.instance()
+
         HttpClient(CIO) {
             install(WebSockets)
 
             install(HttpCookies) {
                 storage = cookiesStorage
             }
+
+            install(ContentNegotiation) {
+                json()
+            }
         }
     }
 
-    MaterialTheme {
-//        Button(onClick = {
-//            text = "Hello, Desktop!"
-//        }) {
-//            Text(text)
-//        }
+    bindSingleton {
+        val roomRepository: RoomRepository by di.instance()
+        MainViewModel(roomRepository)
+    }
 
+}
+
+@Composable
+@Preview
+fun App() = withDI(di) {
+    var theme: Theme by remember { mutableStateOf(LightTheme) }
+    var loggedIn by remember { mutableStateOf(false) }
+
+    val client: HttpClient by di.instance()
+
+    MaterialTheme {
         if(loggedIn) {
             MainScreen(
                 theme = theme,
@@ -61,15 +84,14 @@ fun App() {
                         DarkTheme -> LightTheme
                         LightTheme -> DarkTheme
                     }
-                }
+                },
+                logout = { loggedIn = false }
             )
         } else {
             AuthenticationScreen(
                 theme = theme,
                 client = client,
-                onLogin = {
-                    loggedIn = true
-                }
+                onLogin = { loggedIn = true }
             )
         }
 

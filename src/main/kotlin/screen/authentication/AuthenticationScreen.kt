@@ -17,14 +17,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import io.ktor.client.*
-import io.ktor.client.features.*
-import io.ktor.client.features.cookies.*
-import io.ktor.client.features.websocket.*
-import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -43,8 +40,7 @@ fun AuthenticationScreen(
         LoginForm(
             theme = theme,
             onSubmit = { email, password ->
-                scope.launch {
-
+                scope.launch(Dispatchers.IO) {
                     try {
                         val response: HttpResponse = client.submitForm(
                             url = "$BASE_URL/login",
@@ -70,7 +66,7 @@ fun AuthenticationScreen(
         RegisterForm(
             theme = theme,
             onSubmit = { username, email, password ->
-                scope.launch {
+                scope.launch(Dispatchers.IO) {
                     try {
                         val registerResponse: HttpResponse = client.submitForm(
                             url = "$BASE_URL/register",

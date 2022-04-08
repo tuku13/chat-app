@@ -1,11 +1,9 @@
 package screen.content
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
@@ -23,9 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onEach
 import model.Message
 import pollMessages
 import screen.sidebar.NetworkImage
@@ -35,15 +30,18 @@ import theme.Theme
 fun ContentScreen(
     query: String,
     theme: Theme,
-    changeTheme: () -> Unit
+    changeTheme: () -> Unit,
+    logout: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
             .background(theme.background)
     ) {
-        Header(query, theme, changeTheme)
+        Header(query, theme, changeTheme, logout)
+
         Conversation(modifier = Modifier.weight(1.0f), theme)
+
         BottomBar(theme)
     }
 }
@@ -52,7 +50,8 @@ fun ContentScreen(
 fun Header(
     query: String,
     theme: Theme,
-    changeTheme: () -> Unit
+    changeTheme: () -> Unit,
+    logout: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -76,17 +75,38 @@ fun Header(
                 color = theme.body
             )
 
+            var expanded by remember { mutableStateOf(false) }
+
             Icon(
                 tint = theme.blue,
                 imageVector = Icons.Default.Dehaze,
                 contentDescription = null,
                 modifier = Modifier
                     .size(40.dp)
-                    .clickable {
-                        changeTheme()
-                        println("Hamburger")
-                    }
+                    .clickable { expanded = true }
             )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+            ) {
+                DropdownMenuItem(onClick = {
+                    expanded = false
+                    changeTheme()
+                }) {
+                    Text(text = "Change Theme")
+                }
+
+                DropdownMenuItem(onClick = {
+                    expanded = false
+                    logout()
+                }) {
+                    Text(
+                        text = "Logout",
+                        color = Color.Red
+                    )
+                }
+            }
         }
     }
 }
@@ -99,8 +119,8 @@ fun Conversation(
     Box(
         modifier = modifier
     ) {
-
-        var messages by remember { mutableStateOf<List<Message>>( emptyList()) }
+        var messages by remember { mutableStateOf<List<Message>>(emptyList()) }
+        val scrollState = rememberLazyListState()
 
         LaunchedEffect(Any()) {
             println("Elindult!!!")
@@ -109,18 +129,30 @@ fun Conversation(
             }
         }
 
-        LazyColumn(
-            modifier = Modifier.align(Alignment.BottomCenter)
-        ) {
-            items(messages.size) { index ->
-                val message = messages[index]
+        Box {
+            LazyColumn(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                state = scrollState
+            ) {
+                items(messages.size) { index ->
+                    val message = messages[index]
 
-                ChatBubble(
-                    message = message,
-                    theme = theme,
-                    own = !message.username.contains("i")
-                )
+                    ChatBubble(
+                        message = message,
+                        theme = theme,
+                        own = !message.username.contains("i")
+                    )
+                }
             }
+
+            VerticalScrollbar(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .fillMaxHeight(),
+                adapter = rememberScrollbarAdapter(
+                    scrollState = scrollState
+                )
+            )
         }
 
     }
@@ -143,7 +175,7 @@ fun ChatBubble(
         }
 
         Row {
-            if(!own) {
+            if (!own) {
                 NetworkImage(
                     url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1ndP7V2fYnKkB8UQzMhZFX-joFjrGvNoCGw&usqp=CAU",
                     modifier = Modifier
@@ -186,7 +218,7 @@ fun ChatBubble(
                             fontSize = 14.sp,
                             color = theme.chatText,
                             modifier = Modifier
-                                .padding(horizontal = 8.dp,)
+                                .padding(horizontal = 8.dp)
                         )
 
                         Text(
