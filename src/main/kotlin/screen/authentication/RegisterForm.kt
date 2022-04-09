@@ -60,7 +60,6 @@ fun RegisterForm(
                     value = username,
                     onValueChange = { username = it },
                     modifier = Modifier.padding(bottom = 16.dp),
-                    theme = theme,
                     label = "Username"
                 )
 
@@ -68,7 +67,6 @@ fun RegisterForm(
                     value = email,
                     onValueChange = { email = it },
                     modifier = Modifier.padding(bottom = 16.dp),
-                    theme = theme,
                     keyboardType = KeyboardType.Email,
                     label = "Email"
                 )
@@ -77,7 +75,6 @@ fun RegisterForm(
                     value = password,
                     onValueChange = { password = it },
                     modifier = Modifier.padding(bottom = 16.dp),
-                    theme = theme,
                     keyboardType = KeyboardType.Password,
                     label = "Password"
                 )

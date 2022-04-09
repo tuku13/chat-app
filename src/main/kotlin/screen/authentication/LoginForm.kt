@@ -58,7 +58,6 @@ fun LoginForm(
                 InputTextField(
                     value = email,
                     onValueChange = { email = it },
-                    theme = theme,
                     modifier = Modifier.padding(bottom = 16.dp),
                     label = "Email"
                 )
@@ -66,7 +65,6 @@ fun LoginForm(
                 InputTextField(
                     value = password,
                     onValueChange = { password = it },
-                    theme = theme,
                     modifier = Modifier.padding(bottom = 16.dp),
                     keyboardType = KeyboardType.Password,
                     label = "Password"

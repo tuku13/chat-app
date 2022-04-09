@@ -1,7 +1,12 @@
 package model
 
 data class Message(
-    val username: String,
-    val text: String,
-    val own: Boolean
+    val id: String,
+    val senderId: String,
+    val roomId: String,
+    val content: String,
+    val type: String,
+    val timestamp: Long,
+    val isReceived: Boolean
 )
+

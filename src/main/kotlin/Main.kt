@@ -2,11 +2,7 @@
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -24,12 +20,16 @@ import kotlinx.coroutines.flow.flow
 import model.Message
 import org.kodein.di.DI
 import org.kodein.di.bindSingleton
+import org.kodein.di.compose.localDI
 import org.kodein.di.compose.withDI
 import org.kodein.di.instance
 import repository.RoomRepository
 import screen.authentication.AuthenticationScreen
+import screen.authentication.AuthenticationViewModel
 import screen.main.MainScreen
 import screen.main.MainViewModel
+import service.AuthenticationService
+import service.ThemeService
 import theme.DarkTheme
 import theme.LightTheme
 import theme.Theme
@@ -65,34 +65,37 @@ val di = DI {
         MainViewModel(roomRepository)
     }
 
+    bindSingleton {
+        val client: HttpClient by di.instance()
+        AuthenticationService(client)
+    }
+
+    bindSingleton {
+        val service: AuthenticationService by di.instance()
+        AuthenticationViewModel(service)
+    }
+
+    bindSingleton { ThemeService() }
+
 }
 
 @Composable
 @Preview
 fun App() = withDI(di) {
-    var theme: Theme by remember { mutableStateOf(LightTheme) }
-    var loggedIn by remember { mutableStateOf(false) }
+    val authenticationService: AuthenticationService by di.instance()
+    val themeService: ThemeService by localDI().instance()
 
-    val client: HttpClient by di.instance()
+    val loggedIn = authenticationService.authenticated.collectAsState()
+    val theme = themeService.theme.collectAsState().value
 
     MaterialTheme {
-        if(loggedIn) {
+        if(loggedIn.value) {
             MainScreen(
                 theme = theme,
-                changeTheme = {
-                    theme = when (theme) {
-                        DarkTheme -> LightTheme
-                        LightTheme -> DarkTheme
-                    }
-                },
-                logout = { loggedIn = false }
+                changeTheme = { themeService.changeTheme() }
             )
         } else {
-            AuthenticationScreen(
-                theme = theme,
-                client = client,
-                onLogin = { loggedIn = true }
-            )
+            AuthenticationScreen()
         }
 
     }
@@ -110,13 +113,6 @@ fun main() = application {
 
 fun pollMessages(): Flow<Message> = flow {
     while (true) {
-        emit(
-            Message(
-                username = "user" + Random.nextInt(1000),
-                text = "x".repeat(Random.nextInt(3, 350)),
-                own = Random.nextBoolean()
-            )
-        )
         delay(3 * 1000L)
     }
 }

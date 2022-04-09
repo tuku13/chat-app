@@ -16,14 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import model.Room
 import theme.Theme
 
 @Composable
 fun CollapsedSideBar(
     collapseIconOnClick: () -> Unit,
-    theme: Theme
+    theme: Theme,
+    rooms: List<Room>
 ) {
-    val list = (1..15).toList()
     val scrollState = rememberLazyListState()
 
     Column(
@@ -58,7 +59,9 @@ fun CollapsedSideBar(
                 verticalArrangement = Arrangement.Center,
                 state = scrollState
             ) {
-                items(list) { _ ->
+                items(rooms.size) { index ->
+                    val room = rooms[index]
+
                     Box(modifier = Modifier.height(8.dp))
                     Box(
                         modifier = Modifier
