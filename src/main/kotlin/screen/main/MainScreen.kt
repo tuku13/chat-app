@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import model.Room
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import screen.content.ContentScreen

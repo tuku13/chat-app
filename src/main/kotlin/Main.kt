@@ -13,6 +13,8 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.cookies.*
 import io.ktor.client.plugins.websocket.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -56,6 +58,16 @@ val di = DI {
 
             install(ContentNegotiation) {
                 json()
+            }
+
+            expectSuccess = true
+            HttpResponseValidator {
+                handleResponseException { exception ->
+                    val clientException = exception as? ClientRequestException ?: return@handleResponseException
+                    val exceptionResponse = exception.response
+                    val exceptionResponseText = exceptionResponse.bodyAsText()
+                    throw ResponseException(exceptionResponse, exceptionResponseText)
+                }
             }
         }
     }

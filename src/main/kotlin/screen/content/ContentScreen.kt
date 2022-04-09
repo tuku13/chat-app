@@ -24,4 +24,3 @@ fun ContentScreen(
         BottomBar(theme)
     }
 }
-

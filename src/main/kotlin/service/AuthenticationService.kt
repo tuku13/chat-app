@@ -3,6 +3,7 @@ package service
 import BASE_URL
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -42,9 +43,9 @@ class AuthenticationService(
                 return NetworkResult.Success(true)
             }
 
-        } catch (e: Exception) {
+        } catch (e: ResponseException) {
             return NetworkResult.Error(
-                message = e.message,
+                message = e.response.bodyAsText(),
                 exception = e
             )
         }
