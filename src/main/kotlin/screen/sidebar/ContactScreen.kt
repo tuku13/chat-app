@@ -15,8 +15,9 @@ import theme.Theme
 @Composable
 fun ContactScreen(
     query: String,
-    theme: Theme,
-    rooms: List<Room>
+    rooms: List<Room>,
+    selectedRoom: Room?,
+    selectRoom: (Room) -> Unit
 ) {
     val scrollState = rememberLazyListState()
 
@@ -25,7 +26,11 @@ fun ContactScreen(
             items(rooms.size) { index ->
                 val room = rooms[index]
                 if (room.name.lowercase().contains(query.lowercase())) {
-                    Contact(room = room, theme = theme)
+                    Contact(
+                        room = room,
+                        selected = (room == selectedRoom),
+                        onClick = selectRoom
+                    )
                 }
             }
         }

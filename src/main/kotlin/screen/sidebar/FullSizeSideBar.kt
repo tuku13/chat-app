@@ -9,15 +9,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
 import model.Room
+import org.kodein.di.compose.localDI
+import org.kodein.di.instance
+import service.ThemeService
 import theme.Theme
 
 @Composable
 @Preview
 fun FullSizeSideBar(
     collapseIconOnClick: () -> Unit,
-    theme: Theme,
-    rooms: List<Room>
+    rooms: List<Room>,
+    selectedRoom: Room?,
+    selectRoom: (Room) -> Unit
 ) {
+    val di = localDI()
+    val themeService: ThemeService by di.instance()
+
+    val theme = themeService.theme.value
+
     Column(
         modifier = Modifier.width(328.dp)
             .fillMaxHeight()
@@ -35,8 +44,9 @@ fun FullSizeSideBar(
         Box(modifier = Modifier.weight(1.0f)) {
             ContactScreen(
                 query = query,
-                theme = theme,
-                rooms = rooms
+                rooms = rooms,
+                selectedRoom = selectedRoom,
+                selectRoom = selectRoom
             )
         }
 

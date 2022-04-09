@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DoubleArrow
@@ -17,15 +18,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import model.Room
+import org.kodein.di.compose.localDI
+import org.kodein.di.instance
+import service.ThemeService
 import theme.Theme
 
 @Composable
 fun CollapsedSideBar(
     collapseIconOnClick: () -> Unit,
-    theme: Theme,
-    rooms: List<Room>
+    rooms: List<Room>,
+    selectedRoom: Room?,
+    selectRoom: (Room) -> Unit
 ) {
+    val di = localDI()
+    val themeService: ThemeService by di.instance()
+
     val scrollState = rememberLazyListState()
+    val theme = themeService.theme.value
 
     Column(
         modifier = Modifier
@@ -61,19 +70,20 @@ fun CollapsedSideBar(
             ) {
                 items(rooms.size) { index ->
                     val room = rooms[index]
+                    val backgroundColor = if (room == selectedRoom) Color.Black.copy(alpha = 0.2f) else theme.background
 
-                    Box(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Box(
                         modifier = Modifier
-                            .border(
-                                border = BorderStroke(1.dp, color = theme.border),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                            .padding(horizontal = 8.dp)
+                            .clickable { selectRoom(room) }
+                            .border(BorderStroke(1.dp, theme.border))
+                            .background(backgroundColor)
+                            .padding(8.dp)
                     ) {
                         NetworkImage(
-                            url = "https://lh3.googleusercontent.com/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc=w600",
-                            modifier = Modifier.clip(CircleShape).size(79.dp)
+                            url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvBvDyztL89oD6gnCtsAI8WEd2mo_3TBcWff3wPPGxE2R-6D0ZiZcCmcO9InCciDDgwjs&usqp=CAU",
+                            modifier = Modifier.clip(CircleShape)
                         )
                     }
                 }

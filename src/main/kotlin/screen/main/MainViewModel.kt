@@ -12,11 +12,19 @@ class MainViewModel(
     val rooms: StateFlow<List<Room>>
         get() = _rooms
 
+    private val _selectedRoom: MutableStateFlow<Room?> = MutableStateFlow(null)
+    val selectedRoom: StateFlow<Room?>
+        get() = _selectedRoom
+
     suspend fun getRooms() {
         val rooms = roomRepository.getRooms()
         _rooms.emit(rooms)
 
         println("Rooms: ${_rooms.value.size}")
+    }
+
+    fun selectRoom(room: Room) {
+        _selectedRoom.tryEmit(room)
     }
 
 }

@@ -22,8 +22,8 @@ fun MainScreen(
     val query by remember { mutableStateOf("Group Name") }
     val viewModel: MainViewModel by di.instance()
 
-    val rooms = viewModel.rooms.collectAsState()
-
+    val rooms = viewModel.rooms.collectAsState().value
+    val selectedRoom = viewModel.selectedRoom.collectAsState().value
 
     LaunchedEffect(Any()) {
         viewModel.getRooms()
@@ -32,15 +32,17 @@ fun MainScreen(
     Row(modifier = Modifier.fillMaxHeight()) {
         if (collapsed) {
             CollapsedSideBar(
-                theme = theme,
                 collapseIconOnClick = { collapsed = !collapsed },
-                rooms = rooms.value
+                rooms = rooms,
+                selectedRoom = selectedRoom,
+                selectRoom = { viewModel.selectRoom(it) }
             )
         } else {
             FullSizeSideBar(
-                theme = theme,
                 collapseIconOnClick = { collapsed = !collapsed },
-                rooms = rooms.value
+                rooms = rooms,
+                selectedRoom = selectedRoom,
+                selectRoom = { viewModel.selectRoom(it) }
             )
         }
         ContentScreen(

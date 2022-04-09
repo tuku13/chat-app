@@ -1,34 +1,46 @@
 package screen.sidebar
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import model.Room
-import theme.Theme
+import org.kodein.di.compose.localDI
+import org.kodein.di.instance
+import service.ThemeService
 import util.formatMessageTime
 
 @Composable
 fun Contact(
     room: Room,
-    theme: Theme
+    selected: Boolean,
+    onClick: (Room) -> Unit
 ) {
-    val message = if (room.messages.isEmpty()) null else room.messages.last()
+    val di = localDI()
+    val themeService: ThemeService by di.instance()
 
-    // TODO kicserélni tényleges utolsó üzenetre
+    val theme = themeService.theme.value
+    val message = if (room.messages.isEmpty()) null else room.messages.last()
+    val backgroundColor = if(selected) Color.Black.copy(alpha = 0.2f) else theme.background
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(87.dp)
             .padding(top = 8.dp)
+            .background(backgroundColor)
             .border(BorderStroke(1.dp, color = theme.border))
+            .clickable { onClick(room) }
     ) {
         Row {
             Box(modifier = Modifier.padding(8.dp)) {
