@@ -5,6 +5,7 @@ import dto.UserInfoDTO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import model.Room
+import model.UserInfo
 import repository.RoomRepository
 import util.NetworkResult
 
@@ -26,7 +27,7 @@ class MainViewModel(
         println("Rooms: ${_rooms.value.size}")
     }
 
-    suspend fun addContact(contactInfo: UserInfoDTO) {
+    suspend fun addContact(contactInfo: UserInfo) {
         when (val response = roomRepository.addContact(contactInfo)) {
             is NetworkResult.Success -> refreshRooms()
             else -> { }

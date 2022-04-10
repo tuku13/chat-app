@@ -12,6 +12,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import model.UserInfo
+import model.toUserInfo
 import util.NetworkResult
 
 class AuthenticationService(
@@ -25,8 +27,8 @@ class AuthenticationService(
     val userId
         get() = _userId
 
-    private var _userInfo: MutableStateFlow<UserInfoDTO> = MutableStateFlow(UserInfoDTO("id", "name", "email"))
-    val userInfo: StateFlow<UserInfoDTO>
+    private var _userInfo: MutableStateFlow<UserInfo> = MutableStateFlow(UserInfo("", "", ""))
+    val userInfo: StateFlow<UserInfo>
         get() = _userInfo
 
 
@@ -46,8 +48,8 @@ class AuthenticationService(
                 println(authenticated.value)
                 _userId = response.body()
 
-                val userInfo: UserInfoDTO = client.post("/user/{$_userId}").body()
-                _userInfo.emit(userInfo)
+                val userInfoDTO: UserInfoDTO = client.post("$BASE_URL/user/{$_userId}").body()
+                _userInfo.emit(userInfoDTO.toUserInfo())
 
                 return NetworkResult.Success(true)
             }

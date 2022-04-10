@@ -10,6 +10,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
 import dto.UserInfoDTO
 import model.Room
+import model.UserInfo
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import screen.sidebar.dialog.NewContactDialog
@@ -22,7 +23,7 @@ fun FullSizeSideBar(
     rooms: List<Room>,
     selectedRoom: Room?,
     selectRoom: (Room) -> Unit,
-    addContact: (UserInfoDTO) -> Unit
+    addContact: (UserInfo) -> Unit
 ) {
     val di = localDI()
 

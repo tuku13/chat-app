@@ -11,7 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +21,7 @@ import androidx.compose.ui.window.rememberDialogState
 import dto.UserInfoDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import model.UserInfo
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import service.ThemeService
@@ -29,7 +30,7 @@ import util.NetworkResult
 
 @Composable
 fun NewContactDialog(
-    onCloseRequest: (UserInfoDTO?) -> Unit
+    onCloseRequest: (UserInfo?) -> Unit
 ) {
     val di = localDI()
 
@@ -40,8 +41,8 @@ fun NewContactDialog(
     val theme = themeService.theme
 
     var query by remember { mutableStateOf("") }
-    var userInfoDTOs by remember { mutableStateOf(listOf<UserInfoDTO>()) }
-    var selectedUser: UserInfoDTO? by remember { mutableStateOf(null) }
+    var userInfos by remember { mutableStateOf(listOf<UserInfo>()) }
+    var selectedUser: UserInfo? by remember { mutableStateOf(null) }
 
     Dialog(
         onCloseRequest = { onCloseRequest(selectedUser) },
@@ -62,7 +63,7 @@ fun NewContactDialog(
                         scope.launch(Dispatchers.IO) {
                             when (val response = userService.findUser(query, query)) {
                                 is NetworkResult.Success -> {
-                                    userInfoDTOs = response.value
+                                    userInfos = response.value
                                 }
                                 is NetworkResult.Error -> {}
                             }
@@ -76,8 +77,8 @@ fun NewContactDialog(
             }
 
             LazyColumn {
-                items(userInfoDTOs.size) { index ->
-                    val userInfoDTO = userInfoDTOs[index]
+                items(userInfos.size) { index ->
+                    val userInfoDTO = userInfos[index]
                     Row {
                         RadioButton(
                             selected = userInfoDTO == selectedUser,

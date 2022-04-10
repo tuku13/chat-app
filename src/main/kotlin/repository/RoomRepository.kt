@@ -13,8 +13,10 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import model.Room
+import model.UserInfo
 import service.AuthenticationService
 import util.NetworkResult
+import java.io.File.separator
 
 class RoomRepository(
     private val client: HttpClient,
@@ -37,7 +39,7 @@ class RoomRepository(
         }
     }
 
-    suspend fun addContact(contactInfo: UserInfoDTO):NetworkResult<Boolean> {
+    suspend fun createGroup(members: List<String>, roomName: String): NetworkResult<Boolean> {
         val cookie = client.cookies("$BASE_URL/login")[0]
 
         try {
@@ -45,14 +47,14 @@ class RoomRepository(
                 url = "$BASE_URL/create/room",
                 formParameters = Parameters.build {
                     append("creator", authenticationService.userId)
-                    append("members", contactInfo.id)
-                    append("roomname", "${authenticationService.userInfo.value.name};${contactInfo.name}")
+                    append("members", members.joinToString (separator = "," ))
+                    append("roomname", roomName)
                 }
             ) {
                 cookie
             }
 
-            if(response.status == HttpStatusCode.OK) {
+            if (response.status == HttpStatusCode.OK) {
                 return NetworkResult.Success(true)
             }
         } catch (e: ResponseException) {
@@ -63,5 +65,52 @@ class RoomRepository(
         }
 
         return NetworkResult.Success(false)
+    }
+
+    suspend fun addContact(contactInfo: UserInfo): NetworkResult<Boolean> {
+        return createGroup(
+            members = listOf(contactInfo.id),
+            roomName = "${authenticationService.userInfo.value.name}, ${contactInfo.name}"
+        )
+    }
+
+    suspend fun joinGroup(roomId: String): NetworkResult<Boolean> {
+        try {
+            val response = client.get("$BASE_URL/join/room/$roomId") {
+                val cookie = client.cookies("$BASE_URL/login")[0]
+            }
+
+            if(response.status == HttpStatusCode.OK) {
+                return NetworkResult.Success(true)
+            }
+
+            return NetworkResult.Success(false)
+        } catch (e: ResponseException) {
+            return NetworkResult.Error(
+                message = e.response.bodyAsText(),
+                exception = e
+            )
+        }
+
+    }
+
+    suspend fun leaveGroup(roomId: String): NetworkResult<Boolean> {
+        try {
+            val response = client.get("$BASE_URL/leave/room/$roomId") {
+                val cookie = client.cookies("$BASE_URL/login")[0]
+            }
+
+            if(response.status == HttpStatusCode.OK) {
+                return NetworkResult.Success(true)
+            }
+
+            return NetworkResult.Success(false)
+        } catch (e: ResponseException) {
+            return NetworkResult.Error(
+                message = e.response.bodyAsText(),
+                exception = e
+            )
+        }
+
     }
 }
