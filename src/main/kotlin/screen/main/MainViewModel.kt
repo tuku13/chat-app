@@ -1,7 +1,5 @@
 package screen.main
 
-import androidx.compose.ui.window.WindowPosition.PlatformDefault.y
-import dto.UserInfoDTO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import model.Room

@@ -25,6 +25,7 @@ import org.kodein.di.bindSingleton
 import org.kodein.di.compose.localDI
 import org.kodein.di.compose.withDI
 import org.kodein.di.instance
+import repository.MessageRepository
 import repository.RoomRepository
 import screen.authentication.AuthenticationScreen
 import screen.authentication.AuthenticationViewModel
@@ -95,6 +96,11 @@ val di = DI {
     bindSingleton {
         val client: HttpClient by di.instance()
         UserService(client)
+    }
+
+    bindSingleton {
+        val client: HttpClient by di.instance()
+        MessageRepository(client)
     }
 
 }

@@ -1,5 +1,7 @@
 package screen.content
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -8,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -17,26 +20,27 @@ import org.kodein.di.instance
 import screen.sidebar.NetworkImage
 import service.ThemeService
 import theme.Theme
+import util.formatMessageTime
 
 @Composable
 fun ChatBubble(message: Message) {
     val di = localDI()
+
     val themeService: ThemeService by di.instance()
 
     val theme = themeService.theme
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = if (message.isReceived) Arrangement.Start else Arrangement.End
     ) {
 
-        if (message.isReceived) {
+        if (!message.isReceived) {
             Box(modifier = Modifier.height(50.dp).weight(15.0f))
         }
 
         Row {
-            if (!message.isReceived) {
+            if (message.isReceived) {
                 NetworkImage(
                     url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1ndP7V2fYnKkB8UQzMhZFX-joFjrGvNoCGw&usqp=CAU",
                     modifier = Modifier
@@ -50,27 +54,27 @@ fun ChatBubble(message: Message) {
             Box(
                 modifier = Modifier
                     .wrapContentHeight()
-                    .weight(85.0f),
+                    .fillMaxWidth(0.85f),
             ) {
                 Card(
                     modifier = Modifier
                         .padding(8.dp)
                         .align(
-                            if (message.isReceived) Alignment.CenterEnd else Alignment.CenterStart
+                            if (message.isReceived) Alignment.CenterStart else Alignment.CenterEnd
                         ),
-                    backgroundColor = if (message.isReceived) theme.value.green else theme.value.chatBackground,
+                    backgroundColor = if (!message.isReceived) theme.value.green else theme.value.chatBackground,
                     shape = RoundedCornerShape(10.dp),
                 ) {
                     Column {
                         Box(modifier = Modifier.height(8.dp))
 
-                        if (!message.isReceived) {
+                        if (message.isReceived) {
                             Text(
-                                text = message.senderId,
+                                text = message.senderName,
                                 color = theme.value.title,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(start = 8.dp)
+                                modifier = Modifier.padding(horizontal = 8.dp)
                             )
                         }
 
@@ -83,7 +87,7 @@ fun ChatBubble(message: Message) {
                         )
 
                         Text(
-                            text = message.timestamp.toString(),
+                            text = formatMessageTime(message.timestamp),
                             fontSize = 9.sp,
                             color = theme.value.body,
                             modifier = Modifier
@@ -96,9 +100,8 @@ fun ChatBubble(message: Message) {
             }
         }
 
-
-        if (!message.isReceived) {
-            Box(modifier = Modifier.height(50.dp).weight(15.0f))
-        }
+//        if (!message.isReceived) {
+//            Box(modifier = Modifier.height(50.dp).weight(15.0f))
+//        }
     }
 }

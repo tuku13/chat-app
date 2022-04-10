@@ -15,7 +15,6 @@ import util.NetworkResult
 class UserService(
     private val client: HttpClient
 ) {
-
     suspend fun findUser(name: String, email: String): NetworkResult<List<UserInfo>> {
         try {
             val response: HttpResponse = client.submitForm(
@@ -37,4 +36,5 @@ class UserService(
 
         return NetworkResult.Success(emptyList())
     }
+
 }

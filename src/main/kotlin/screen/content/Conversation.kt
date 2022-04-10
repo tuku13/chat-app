@@ -14,7 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import model.Message
 import model.Room
+import org.kodein.di.compose.localDI
+import org.kodein.di.instance
 import pollMessages
+import screen.main.MainViewModel
 
 @Composable
 fun Conversation(
@@ -24,12 +27,13 @@ fun Conversation(
     Box(
         modifier = modifier
     ) {
-        var messages by remember { mutableStateOf<List<Message>>(emptyList()) }
+        val messages = selectedRoom?.messages ?: emptyList()
+        var realTimeMessages by remember { mutableStateOf<List<Message>>(emptyList()) }
         val scrollState = rememberLazyListState()
 
         LaunchedEffect(Any()) {
             pollMessages().collect {
-                messages = listOf(*messages.toTypedArray(), it)
+                realTimeMessages = listOf(*realTimeMessages.toTypedArray(), it)
             }
         }
 
@@ -38,8 +42,14 @@ fun Conversation(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 state = scrollState
             ) {
+
                 items(messages.size) { index ->
                     val message = messages[index]
+                    ChatBubble(message)
+                }
+
+                items(realTimeMessages.size) { index ->
+                    val message = realTimeMessages[index]
                     ChatBubble(message)
                 }
             }

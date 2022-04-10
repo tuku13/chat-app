@@ -48,7 +48,7 @@ class AuthenticationService(
                 println(authenticated.value)
                 _userId = response.body()
 
-                val userInfoDTO: UserInfoDTO = client.post("$BASE_URL/user/{$_userId}").body()
+                val userInfoDTO: UserInfoDTO = client.post("$BASE_URL/user/$_userId").body()
                 _userInfo.emit(userInfoDTO.toUserInfo())
 
                 return NetworkResult.Success(true)

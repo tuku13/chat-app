@@ -24,7 +24,7 @@ suspend fun RoomDTO.toRoom(client: HttpClient, userId: String): Room {
 
     val messageDTOs: List<MessageDTO> = response.body()
 
-    val messages = messageDTOs.map { it.toMessage(userId) }
+    val messages = messageDTOs.map { it.toMessage(userId, client) }
 
     return Room(
         id = id,
