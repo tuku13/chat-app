@@ -13,13 +13,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import model.Message
+import model.Room
 import pollMessages
-import theme.Theme
 
 @Composable
 fun Conversation(
     modifier: Modifier = Modifier,
-    theme: Theme
+    selectedRoom: Room?
 ) {
     Box(
         modifier = modifier
@@ -40,11 +40,7 @@ fun Conversation(
             ) {
                 items(messages.size) { index ->
                     val message = messages[index]
-
-                    ChatBubble(
-                        message = message,
-                        theme = theme,
-                    )
+                    ChatBubble(message)
                 }
             }
 

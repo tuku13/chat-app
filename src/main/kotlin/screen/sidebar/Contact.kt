@@ -29,9 +29,9 @@ fun Contact(
     val di = localDI()
     val themeService: ThemeService by di.instance()
 
-    val theme = themeService.theme.value
+    val theme = themeService.theme
     val message = if (room.messages.isEmpty()) null else room.messages.last()
-    val backgroundColor = if(selected) Color.Black.copy(alpha = 0.2f) else theme.background
+    val backgroundColor = if(selected) Color.Black.copy(alpha = 0.2f) else theme.value.background
 
     Box(
         modifier = Modifier
@@ -39,7 +39,7 @@ fun Contact(
             .height(87.dp)
             .padding(top = 8.dp)
             .background(backgroundColor)
-            .border(BorderStroke(1.dp, color = theme.border))
+            .border(BorderStroke(1.dp, color = theme.value.border))
             .clickable { onClick(room) }
     ) {
         Row {
@@ -64,12 +64,12 @@ fun Contact(
                         text = room.name,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = theme.title
+                        color = theme.value.title
                     )
                     Text(
                         text = if (message == null) "" else formatMessageTime(room.messages.last().timestamp),
                         fontSize = 12.sp,
-                        color = theme.body
+                        color = theme.value.body
                     )
                 }
 
@@ -84,7 +84,7 @@ fun Contact(
                         maxLines = 2,
                         text = text,
                         fontSize = 14.sp,
-                        color = theme.body
+                        color = theme.value.body
                     )
                 }
             }

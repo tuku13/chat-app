@@ -1,6 +1,7 @@
 package service
 
 import BASE_URL
+import dto.UserInfoDTO
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -24,6 +25,11 @@ class AuthenticationService(
     val userId
         get() = _userId
 
+    private var _userInfo: MutableStateFlow<UserInfoDTO> = MutableStateFlow(UserInfoDTO("id", "name", "email"))
+    val userInfo: StateFlow<UserInfoDTO>
+        get() = _userInfo
+
+
     suspend fun login(email: String, password: String): NetworkResult<Boolean> {
         try {
             val response: HttpResponse = client.submitForm(
@@ -39,6 +45,9 @@ class AuthenticationService(
                 _authenticated.emit(true)
                 println(authenticated.value)
                 _userId = response.body()
+
+                val userInfo: UserInfoDTO = client.post("/user/{$_userId}").body()
+                _userInfo.emit(userInfo)
 
                 return NetworkResult.Success(true)
             }

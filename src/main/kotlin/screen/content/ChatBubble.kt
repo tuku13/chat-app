@@ -12,14 +12,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import model.Message
+import org.kodein.di.compose.localDI
+import org.kodein.di.instance
 import screen.sidebar.NetworkImage
+import service.ThemeService
 import theme.Theme
 
 @Composable
-fun ChatBubble(
-    message: Message,
-    theme: Theme
-) {
+fun ChatBubble(message: Message) {
+    val di = localDI()
+    val themeService: ThemeService by di.instance()
+
+    val theme = themeService.theme
 
     Row(
         modifier = Modifier
@@ -54,7 +58,7 @@ fun ChatBubble(
                         .align(
                             if (message.isReceived) Alignment.CenterEnd else Alignment.CenterStart
                         ),
-                    backgroundColor = if (message.isReceived) theme.green else theme.chatBackground,
+                    backgroundColor = if (message.isReceived) theme.value.green else theme.value.chatBackground,
                     shape = RoundedCornerShape(10.dp),
                 ) {
                     Column {
@@ -63,7 +67,7 @@ fun ChatBubble(
                         if (!message.isReceived) {
                             Text(
                                 text = message.senderId,
-                                color = theme.title,
+                                color = theme.value.title,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(start = 8.dp)
@@ -73,7 +77,7 @@ fun ChatBubble(
                         Text(
                             text = message.content,
                             fontSize = 14.sp,
-                            color = theme.chatText,
+                            color = theme.value.chatText,
                             modifier = Modifier
                                 .padding(horizontal = 8.dp)
                         )
@@ -81,7 +85,7 @@ fun ChatBubble(
                         Text(
                             text = message.timestamp.toString(),
                             fontSize = 9.sp,
-                            color = theme.body,
+                            color = theme.value.body,
                             modifier = Modifier
                                 .padding(8.dp)
                                 .align(Alignment.End)

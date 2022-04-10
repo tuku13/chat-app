@@ -24,20 +24,20 @@ fun AuthenticationScreen() {
     val viewModel: AuthenticationViewModel by localDI().instance()
 
     val themeService: ThemeService by localDI().instance()
-    val theme = themeService.theme.collectAsState().value
+    val theme = themeService.theme.collectAsState()
 
     var isDialogOpen by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("Error") }
 
     Row(
-        modifier = Modifier.background(theme.background).fillMaxSize(),
+        modifier = Modifier.background(theme.value.background).fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         val scope: CoroutineScope = rememberCoroutineScope()
 
         LoginForm(
-            theme = theme,
+            theme = theme.value,
             onSubmit = { email, password ->
                 scope.launch(Dispatchers.IO) {
                     val result = viewModel.login(email, password)
@@ -61,7 +61,7 @@ fun AuthenticationScreen() {
         Spacer(modifier = Modifier.width(100.dp))
 
         RegisterForm(
-            theme = theme,
+            theme = theme.value,
             onSubmit = { username, email, password ->
                 scope.launch(Dispatchers.IO) {
                     when(val registerResult = viewModel.register(username, email, password)) {

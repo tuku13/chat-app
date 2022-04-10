@@ -1,9 +1,12 @@
 package screen.main
 
+import androidx.compose.ui.window.WindowPosition.PlatformDefault.y
+import dto.UserInfoDTO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import model.Room
 import repository.RoomRepository
+import util.NetworkResult
 
 class MainViewModel(
     private val roomRepository: RoomRepository
@@ -16,11 +19,18 @@ class MainViewModel(
     val selectedRoom: StateFlow<Room?>
         get() = _selectedRoom
 
-    suspend fun getRooms() {
+    suspend fun refreshRooms() {
         val rooms = roomRepository.getRooms()
         _rooms.emit(rooms)
 
         println("Rooms: ${_rooms.value.size}")
+    }
+
+    suspend fun addContact(contactInfo: UserInfoDTO) {
+        when (val response = roomRepository.addContact(contactInfo)) {
+            is NetworkResult.Success -> refreshRooms()
+            else -> { }
+        }
     }
 
     fun selectRoom(room: Room) {

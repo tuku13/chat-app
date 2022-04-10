@@ -34,14 +34,14 @@ fun CollapsedSideBar(
     val themeService: ThemeService by di.instance()
 
     val scrollState = rememberLazyListState()
-    val theme = themeService.theme.value
+    val theme = themeService.theme
 
     Column(
         modifier = Modifier
             .fillMaxHeight()
             .width(79.dp)
-            .background(theme.background)
-            .border(BorderStroke(1.dp, color = theme.border)),
+            .background(theme.value.background)
+            .border(BorderStroke(1.dp, color = theme.value.border)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -49,13 +49,13 @@ fun CollapsedSideBar(
             modifier = Modifier
                 .height(79.dp)
                 .fillMaxWidth()
-                .border(BorderStroke(1.dp, color = theme.border))
+                .border(BorderStroke(1.dp, color = theme.value.border))
                 .align(Alignment.CenterHorizontally)
                 .clickable { collapseIconOnClick() }
         ) {
             Icon(
                 imageVector = Icons.Default.DoubleArrow,
-                tint = theme.blue,
+                tint = theme.value.blue,
                 contentDescription = null,
                 modifier = Modifier
                     .size(40.dp)
@@ -70,14 +70,14 @@ fun CollapsedSideBar(
             ) {
                 items(rooms.size) { index ->
                     val room = rooms[index]
-                    val backgroundColor = if (room == selectedRoom) Color.Black.copy(alpha = 0.2f) else theme.background
+                    val backgroundColor = if (room == selectedRoom) Color.Black.copy(alpha = 0.2f) else theme.value.background
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Box(
                         modifier = Modifier
                             .clickable { selectRoom(room) }
-                            .border(BorderStroke(1.dp, theme.border))
+                            .border(BorderStroke(1.dp, theme.value.border))
                             .background(backgroundColor)
                             .padding(8.dp)
                     ) {

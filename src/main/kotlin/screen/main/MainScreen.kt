@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import screen.content.ContentScreen
@@ -18,15 +20,15 @@ fun MainScreen(
 ) {
     val di = localDI()
 
-    var collapsed by remember { mutableStateOf(false) }
-    val query by remember { mutableStateOf("Group Name") }
     val viewModel: MainViewModel by di.instance()
+    val scope = rememberCoroutineScope()
 
+    var collapsed by remember { mutableStateOf(false) }
     val rooms = viewModel.rooms.collectAsState().value
     val selectedRoom = viewModel.selectedRoom.collectAsState().value
 
     LaunchedEffect(Any()) {
-        viewModel.getRooms()
+        viewModel.refreshRooms()
     }
 
     Row(modifier = Modifier.fillMaxHeight()) {
@@ -42,11 +44,18 @@ fun MainScreen(
                 collapseIconOnClick = { collapsed = !collapsed },
                 rooms = rooms,
                 selectedRoom = selectedRoom,
-                selectRoom = { viewModel.selectRoom(it) }
+                selectRoom = { viewModel.selectRoom(it) },
+                addContact = {
+                    scope.launch(Dispatchers.IO) {
+                        viewModel.addContact(it)
+                        viewModel.refreshRooms()
+                    }
+                }
             )
         }
+
         ContentScreen(
-            query = query,
+            selectedRoom = selectedRoom,
             theme = theme,
             changeTheme = changeTheme,
         )

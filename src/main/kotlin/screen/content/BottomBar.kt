@@ -24,15 +24,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import theme.Theme
+import org.kodein.di.compose.localDI
+import org.kodein.di.instance
+import service.ThemeService
 
 @Composable
-fun BottomBar(theme: Theme) {
+fun BottomBar() {
+    val di = localDI()
+
+    val themeService: ThemeService by di.instance()
+
+    val theme = themeService.theme
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .border(BorderStroke(1.dp, color = theme.border))
+            .border(BorderStroke(1.dp, color = theme.value.border))
     ) {
         Row(
             modifier = Modifier
@@ -42,7 +50,7 @@ fun BottomBar(theme: Theme) {
         ) {
 
             Icon(
-                tint = theme.blue,
+                tint = theme.value.blue,
                 imageVector = Icons.Default.AttachFile,
                 contentDescription = null,
                 modifier = Modifier
@@ -53,7 +61,7 @@ fun BottomBar(theme: Theme) {
             )
 
             Icon(
-                tint = theme.blue,
+                tint = theme.value.blue,
                 imageVector = Icons.Default.ImageSearch,
                 contentDescription = null,
                 modifier = Modifier
@@ -67,8 +75,8 @@ fun BottomBar(theme: Theme) {
 
             CompositionLocalProvider(
                 LocalTextSelectionColors provides TextSelectionColors(
-                    handleColor = theme.blue,
-                    backgroundColor = theme.blue
+                    handleColor = theme.value.blue,
+                    backgroundColor = theme.value.blue
                 )
             ) {
                 TextField(
@@ -82,10 +90,10 @@ fun BottomBar(theme: Theme) {
                         ),
                     shape = RoundedCornerShape(0),
                     colors = TextFieldDefaults.textFieldColors(
-                        textColor = theme.body,
-                        cursorColor = theme.border,
-                        placeholderColor = theme.body,
-                        backgroundColor = theme.background,
+                        textColor = theme.value.body,
+                        cursorColor = theme.value.border,
+                        placeholderColor = theme.value.body,
+                        backgroundColor = theme.value.background,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
@@ -96,7 +104,7 @@ fun BottomBar(theme: Theme) {
             }
 
             Icon(
-                tint = theme.blue,
+                tint = theme.value.blue,
                 imageVector = Icons.Default.Send,
                 contentDescription = null,
                 modifier = Modifier

@@ -23,26 +23,31 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import model.Room
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import service.AuthenticationService
+import service.ThemeService
 import theme.Theme
 
 @Composable
 fun Header(
-    query: String,
-    theme: Theme,
+    selectedRoom: Room?,
     changeTheme: () -> Unit,
 ) {
     val di = localDI()
+
     val authenticationService: AuthenticationService by di.instance()
+    val themeService: ThemeService by di.instance()
+
+    val theme = themeService.theme
     val scope: CoroutineScope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(79.dp)
-            .border(BorderStroke(1.dp, color = theme.border))
+            .border(BorderStroke(1.dp, color = theme.value.border))
             .padding(16.dp)
     ) {
         Row(
@@ -55,15 +60,15 @@ fun Header(
             Box(modifier = Modifier.size(40.dp))
 
             Text(
-                text = query,
+                text = selectedRoom?.name ?: "Group name",
                 fontSize = 18.sp,
-                color = theme.body
+                color = theme.value.body
             )
 
             var expanded by remember { mutableStateOf(false) }
 
             Icon(
-                tint = theme.blue,
+                tint = theme.value.blue,
                 imageVector = Icons.Default.Dehaze,
                 contentDescription = null,
                 modifier = Modifier

@@ -25,7 +25,7 @@ fun InputTextField(
     label: String = "",
 ) {
     val themeService: ThemeService by localDI().instance()
-    val theme = themeService.theme.collectAsState().value
+    val theme = themeService.theme.collectAsState()
 
     TextField(
         value = value,
@@ -37,19 +37,19 @@ fun InputTextField(
         modifier = modifier,
         singleLine = true,
         colors = TextFieldDefaults.textFieldColors(
-            textColor = theme.body,
-            cursorColor = theme.cursor,
-            placeholderColor = theme.body,
-            backgroundColor = theme.textFieldBackground,
+            textColor = theme.value.body,
+            cursorColor = theme.value.cursor,
+            placeholderColor = theme.value.body,
+            backgroundColor = theme.value.textFieldBackground,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
-            focusedLabelColor = theme.title
+            focusedLabelColor = theme.value.title
         ),
         shape = RoundedCornerShape(0),
         label = {
             Text(
                 text = label,
-                color = theme.body
+                color = theme.value.body
             )
         }
     )

@@ -4,11 +4,12 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import model.Room
 import theme.Theme
 
 @Composable
 fun ContentScreen(
-    query: String,
+    selectedRoom: Room?,
     theme: Theme,
     changeTheme: () -> Unit,
 ) {
@@ -17,10 +18,10 @@ fun ContentScreen(
             .fillMaxHeight()
             .background(theme.background)
     ) {
-        Header(query, theme, changeTheme)
+        Header(selectedRoom, changeTheme)
 
-        Conversation(modifier = Modifier.weight(1.0f), theme)
+        Conversation(modifier = Modifier.weight(1.0f), selectedRoom)
 
-        BottomBar(theme)
+        BottomBar()
     }
 }

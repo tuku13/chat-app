@@ -32,6 +32,7 @@ import screen.main.MainScreen
 import screen.main.MainViewModel
 import service.AuthenticationService
 import service.ThemeService
+import service.UserService
 import theme.DarkTheme
 import theme.LightTheme
 import theme.Theme
@@ -41,7 +42,9 @@ const val BASE_URL: String = "http://0.0.0.0:9090"
 val di = DI {
     bindSingleton<RoomRepository> {
         val client: HttpClient by di.instance()
-        RoomRepository(client)
+        val authenticationService: AuthenticationService by di.instance()
+
+        RoomRepository(client, authenticationService)
     }
 
     bindSingleton<CookiesStorage> { AcceptAllCookiesStorage() }
@@ -89,6 +92,11 @@ val di = DI {
 
     bindSingleton { ThemeService() }
 
+    bindSingleton {
+        val client: HttpClient by di.instance()
+        UserService(client)
+    }
+
 }
 
 @Composable
@@ -98,12 +106,12 @@ fun App() = withDI(di) {
     val themeService: ThemeService by localDI().instance()
 
     val loggedIn = authenticationService.authenticated.collectAsState()
-    val theme = themeService.theme.collectAsState().value
+    val theme = themeService.theme.collectAsState()
 
     MaterialTheme {
         if(loggedIn.value) {
             MainScreen(
-                theme = theme,
+                theme = theme.value,
                 changeTheme = { themeService.changeTheme() }
             )
         } else {
