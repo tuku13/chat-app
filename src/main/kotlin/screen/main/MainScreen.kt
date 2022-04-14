@@ -24,8 +24,8 @@ fun MainScreen(
     val scope = rememberCoroutineScope()
 
     var collapsed by remember { mutableStateOf(false) }
-    val rooms = viewModel.rooms.collectAsState().value
-    val selectedRoom = viewModel.selectedRoom.collectAsState().value
+    val rooms = viewModel.rooms.collectAsState()
+    val selectedRoom = viewModel.selectedRoom.collectAsState()
 
     LaunchedEffect(Any()) {
         viewModel.refreshRooms()
@@ -35,15 +35,15 @@ fun MainScreen(
         if (collapsed) {
             CollapsedSideBar(
                 collapseIconOnClick = { collapsed = !collapsed },
-                rooms = rooms,
-                selectedRoom = selectedRoom,
+                rooms = rooms.value,
+                selectedRoom = selectedRoom.value,
                 selectRoom = { viewModel.selectRoom(it) }
             )
         } else {
             FullSizeSideBar(
                 collapseIconOnClick = { collapsed = !collapsed },
-                rooms = rooms,
-                selectedRoom = selectedRoom,
+                rooms = rooms.value,
+                selectedRoom = selectedRoom.value,
                 selectRoom = { viewModel.selectRoom(it) },
                 addContact = {
                     scope.launch(Dispatchers.IO) {
@@ -55,7 +55,7 @@ fun MainScreen(
         }
 
         ContentScreen(
-            selectedRoom = selectedRoom,
+            selectedRoom = selectedRoom.value,
             theme = theme,
             changeTheme = changeTheme,
         )

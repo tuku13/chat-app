@@ -77,7 +77,7 @@ class RoomRepository(
     suspend fun joinGroup(roomId: String): NetworkResult<Boolean> {
         try {
             val response = client.get("$BASE_URL/join/room/$roomId") {
-                val cookie = client.cookies("$BASE_URL/login")[0]
+                client.cookies("$BASE_URL/login")[0]
             }
 
             if(response.status == HttpStatusCode.OK) {
@@ -97,7 +97,7 @@ class RoomRepository(
     suspend fun leaveGroup(roomId: String): NetworkResult<Boolean> {
         try {
             val response = client.get("$BASE_URL/leave/room/$roomId") {
-                val cookie = client.cookies("$BASE_URL/login")[0]
+                client.cookies("$BASE_URL/login")[0]
             }
 
             if(response.status == HttpStatusCode.OK) {

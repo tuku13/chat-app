@@ -3,10 +3,14 @@ package dto
 import BASE_URL
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import kotlinx.serialization.Serializable
 import model.Message
 import model.toUserInfo
+import org.kodein.di.compose.localDI
+import org.kodein.di.instance
+import service.AuthenticationService
 
 @Serializable
 data class MessageDTO(
@@ -18,13 +22,26 @@ data class MessageDTO(
     val timestamp: Long
 )
 
-suspend fun MessageDTO.toMessage(userId: String, client: HttpClient): Message {
-    val userInfoDTO: UserInfoDTO = client.post("$BASE_URL/user/${senderId}").body()
+suspend fun MessageDTO.toMessage(): Message {
+    val client: HttpClient by DIContainer.di.instance()
+    val authenticationService: AuthenticationService by DIContainer.di.instance()
+
+    val userId = authenticationService.userId
+    var senderName = ""
+
+    try {
+        val userInfoDTO: UserInfoDTO = client.post("$BASE_URL/user/${senderId}").body()
+
+        senderName = userInfoDTO.toUserInfo().name
+
+    } catch (e: ResponseException) {
+        println("Error converting $this ti Message, Exception: ${e.message}")
+    }
 
     return Message(
         id = id,
         senderId = senderId,
-        senderName = userInfoDTO.toUserInfo().name,
+        senderName = senderName,
         roomId = roomId,
         content = content,
         type = type,

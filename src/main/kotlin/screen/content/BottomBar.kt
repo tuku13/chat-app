@@ -24,15 +24,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import service.ThemeService
+import service.WebSocketService
 
 @Composable
 fun BottomBar() {
     val di = localDI()
+    val scope = rememberCoroutineScope()
 
     val themeService: ThemeService by di.instance()
+    val webSocketService: WebSocketService by di.instance()
 
     val theme = themeService.theme
 
@@ -112,8 +117,11 @@ fun BottomBar() {
                     .padding(bottom = 8.dp)
                     .size(40.dp)
                     .clickable {
+                        val messageText = message
+                        scope.launch {
+                            webSocketService.sendMessage(messageText)
+                        }
                         message = ""
-                        println("Send")
                     }
             )
         }

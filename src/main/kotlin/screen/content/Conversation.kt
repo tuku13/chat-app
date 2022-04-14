@@ -8,16 +8,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import model.Message
 import model.Room
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pollMessages
-import screen.main.MainViewModel
+import service.WebSocketService
 
 @Composable
 fun Conversation(
@@ -27,14 +25,23 @@ fun Conversation(
     Box(
         modifier = modifier
     ) {
+        val di = localDI()
+
+        val webSocketService: WebSocketService by di.instance()
+
         val messages = selectedRoom?.messages ?: emptyList()
-        var realTimeMessages by remember { mutableStateOf<List<Message>>(emptyList()) }
+        val realTimeMessages = webSocketService.messages.collectAsState()
         val scrollState = rememberLazyListState()
 
-        LaunchedEffect(Any()) {
-            pollMessages().collect {
-                realTimeMessages = listOf(*realTimeMessages.toTypedArray(), it)
-            }
+        LaunchedEffect(selectedRoom) {
+            selectedRoom?.let { webSocketService.join(it.id) }
+        }
+
+        LaunchedEffect(scrollState) {
+            snapshotFlow { scrollState.layoutInfo.totalItemsCount }
+                .collect {
+                    scrollState.animateScrollToItem(it)
+                }
         }
 
         Box {
@@ -48,8 +55,8 @@ fun Conversation(
                     ChatBubble(message)
                 }
 
-                items(realTimeMessages.size) { index ->
-                    val message = realTimeMessages[index]
+                items(realTimeMessages.value.size) { index ->
+                    val message = realTimeMessages.value[index]
                     ChatBubble(message)
                 }
             }
@@ -58,9 +65,7 @@ fun Conversation(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .fillMaxHeight(),
-                adapter = rememberScrollbarAdapter(
-                    scrollState = scrollState
-                )
+                adapter = rememberScrollbarAdapter(scrollState = scrollState)
             )
         }
 
