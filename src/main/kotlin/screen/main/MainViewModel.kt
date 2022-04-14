@@ -21,12 +21,10 @@ class MainViewModel(
     suspend fun refreshRooms() {
         val rooms = roomRepository.getRooms()
         _rooms.emit(rooms)
-
-        println("Rooms: ${_rooms.value.size}")
     }
 
     suspend fun addContact(contactInfo: UserInfo) {
-        when (val response = roomRepository.addContact(contactInfo)) {
+        when (roomRepository.addContact(contactInfo)) {
             is NetworkResult.Success -> refreshRooms()
             else -> { }
         }

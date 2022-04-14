@@ -22,21 +22,24 @@ class RoomRepository(
     private val client: HttpClient,
     private val authenticationService: AuthenticationService
 ) {
-
     suspend fun getRooms(): List<Room> {
-        // TODO try-catch
-        val response: HttpResponse = client.get("$BASE_URL/rooms") {
-            client.cookies("$BASE_URL/login")[0]
+        return try {
+            val response: HttpResponse = client.get("$BASE_URL/rooms") {
+                client.cookies("$BASE_URL/login")[0]
+            }
+
+            val roomDTOs: List<RoomDTO> = response.body()
+
+            roomDTOs.map {
+                it.toRoom(
+                    client = client,
+                    userId = "624f2c95fce1a1538a285cd1"
+                )
+            }
+        } catch (e: ResponseException) {
+             emptyList()
         }
 
-        val roomDTOs: List<RoomDTO> = response.body()
-
-        return roomDTOs.map {
-            it.toRoom(
-                client = client,
-                userId = "624f2c95fce1a1538a285cd1"
-            )
-        }
     }
 
     suspend fun createGroup(members: List<String>, roomName: String): NetworkResult<Boolean> {

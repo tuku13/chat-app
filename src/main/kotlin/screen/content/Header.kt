@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import model.Room
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
+import repository.RoomRepository
 import service.AuthenticationService
 import service.ThemeService
 import theme.Theme
@@ -38,6 +39,7 @@ fun Header(
     val di = localDI()
 
     val authenticationService: AuthenticationService by di.instance()
+    val roomRepository: RoomRepository by di.instance()
     val themeService: ThemeService by di.instance()
 
     val theme = themeService.theme
@@ -85,6 +87,22 @@ fun Header(
                     changeTheme()
                 }) {
                     Text(text = "Change Theme")
+                }
+
+                DropdownMenuItem(onClick = {
+                    expanded = false
+
+                    selectedRoom?.let {
+                        scope.launch(Dispatchers.IO) {
+                            roomRepository.leaveGroup(selectedRoom.id)
+                        }
+                    }
+
+                }) {
+                    Text(
+                        text = "Leave Group",
+                        color = Color.Red
+                    )
                 }
 
                 DropdownMenuItem(onClick = {

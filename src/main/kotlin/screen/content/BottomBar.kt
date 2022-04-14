@@ -39,7 +39,7 @@ fun BottomBar() {
     val themeService: ThemeService by di.instance()
     val webSocketService: WebSocketService by di.instance()
 
-    val theme = themeService.theme
+    val theme = themeService.theme.collectAsState()
 
     Box(
         modifier = Modifier
