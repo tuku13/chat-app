@@ -80,8 +80,8 @@ fun BottomBar() {
 
             CompositionLocalProvider(
                 LocalTextSelectionColors provides TextSelectionColors(
-                    handleColor = theme.value.blue,
-                    backgroundColor = theme.value.blue
+                    handleColor = Color.Black.copy(alpha = 0.2f),
+                    backgroundColor = Color.Black.copy(alpha = 0.2f)
                 )
             ) {
                 TextField(
@@ -96,7 +96,7 @@ fun BottomBar() {
                     shape = RoundedCornerShape(0),
                     colors = TextFieldDefaults.textFieldColors(
                         textColor = theme.value.body,
-                        cursorColor = theme.value.border,
+                        cursorColor = theme.value.body,
                         placeholderColor = theme.value.body,
                         backgroundColor = theme.value.background,
                         focusedIndicatorColor = Color.Transparent,

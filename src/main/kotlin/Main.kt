@@ -3,7 +3,9 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
@@ -41,6 +43,8 @@ import theme.Theme
 import kotlin.random.Random
 
 const val BASE_URL: String = "http://0.0.0.0:9090"
+const val MIN_HEIGHT = 200
+const val MIN_WIDTH = 300
 
 object DIContainer {
     val di = DI {
@@ -140,10 +144,12 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = "Chat App",
-        state = WindowState(size = DpSize(1024.dp, 768.dp))
+        state = WindowState(size = DpSize(1024.dp, 768.dp)),
+        resizable = false
     ) {
         App()
     }
 }
+
 
 

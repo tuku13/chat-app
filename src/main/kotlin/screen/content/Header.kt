@@ -62,60 +62,62 @@ fun Header(
             Box(modifier = Modifier.size(40.dp))
 
             Text(
-                text = selectedRoom?.name ?: "Group name",
+                text = selectedRoom?.name ?: "",
                 fontSize = 18.sp,
                 color = theme.value.body
             )
 
             var expanded by remember { mutableStateOf(false) }
 
-            Icon(
-                tint = theme.value.blue,
-                imageVector = Icons.Default.Dehaze,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clickable { expanded = true }
-            )
+            Box {
+                Icon(
+                    tint = theme.value.blue,
+                    imageVector = Icons.Default.Dehaze,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable { expanded = true }
+                )
 
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-            ) {
-                DropdownMenuItem(onClick = {
-                    expanded = false
-                    changeTheme()
-                }) {
-                    Text(text = "Change Theme")
-                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                ) {
+                    DropdownMenuItem(onClick = {
+                        expanded = false
+                        changeTheme()
+                    }) {
+                        Text(text = "Change Theme")
+                    }
 
-                DropdownMenuItem(onClick = {
-                    expanded = false
+                    DropdownMenuItem(onClick = {
+                        expanded = false
 
-                    selectedRoom?.let {
-                        scope.launch(Dispatchers.IO) {
-                            roomRepository.leaveGroup(selectedRoom.id)
+                        selectedRoom?.let {
+                            scope.launch(Dispatchers.IO) {
+                                roomRepository.leaveGroup(selectedRoom.id)
+                            }
                         }
+
+                    }) {
+                        Text(
+                            text = "Leave Group",
+                            color = Color.Red
+                        )
                     }
 
-                }) {
-                    Text(
-                        text = "Leave Group",
-                        color = Color.Red
-                    )
-                }
+                    DropdownMenuItem(onClick = {
+                        expanded = false
 
-                DropdownMenuItem(onClick = {
-                    expanded = false
-
-                    scope.launch(Dispatchers.IO) {
-                        authenticationService.logout()
+                        scope.launch(Dispatchers.IO) {
+                            authenticationService.logout()
+                        }
+                    }) {
+                        Text(
+                            text = "Logout",
+                            color = Color.Red
+                        )
                     }
-                }) {
-                    Text(
-                        text = "Logout",
-                        color = Color.Red
-                    )
                 }
             }
         }
