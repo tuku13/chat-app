@@ -14,13 +14,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sun.org.apache.xalan.internal.lib.ExsltStrings.padding
 import model.Message
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
+import screen.sidebar.LocalImage
 import screen.sidebar.NetworkImage
 import service.ThemeService
 import theme.Theme
 import util.formatMessageTime
+import java.util.*
 
 @Composable
 fun ChatBubble(message: Message) {
@@ -29,6 +32,8 @@ fun ChatBubble(message: Message) {
     val themeService: ThemeService by di.instance()
 
     val theme = themeService.theme
+
+
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -78,13 +83,25 @@ fun ChatBubble(message: Message) {
                             )
                         }
 
-                        Text(
-                            text = message.content,
-                            fontSize = 14.sp,
-                            color = theme.value.chatText,
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp)
-                        )
+                        when(message.type) {
+                            "IMAGE" -> {
+                                val uuid = UUIDFromString(message.content)
+                                if(uuid != UUID.fromString("")) {
+                                    LocalImage(
+                                        uuid = uuid,
+                                        modifier = Modifier.padding(16.dp).widthIn(max = 512.dp).heightIn(max = 512.dp)
+                                    )
+                                }
+                            }
+                            else -> {
+                                Text(
+                                    text = message.content,
+                                    fontSize = 14.sp,
+                                    color = theme.value.chatText,
+                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                )
+                            }
+                        }
 
                         Text(
                             text = formatMessageTime(message.timestamp),
@@ -103,5 +120,13 @@ fun ChatBubble(message: Message) {
 //        if (!message.isReceived) {
 //            Box(modifier = Modifier.height(50.dp).weight(15.0f))
 //        }
+    }
+}
+
+fun UUIDFromString(uuidString: String): UUID {
+    return try {
+        UUID.fromString(uuidString)
+    } catch (e: Exception) {
+        return UUID.randomUUID()
     }
 }

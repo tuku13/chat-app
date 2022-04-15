@@ -31,6 +31,7 @@ import org.kodein.di.instance
 import service.ThemeService
 import service.WebSocketService
 import java.awt.FileDialog
+import java.io.File
 
 @Composable
 fun BottomBar() {
@@ -63,7 +64,12 @@ fun BottomBar() {
                     .padding(horizontal = 8.dp)
                     .padding(bottom = 8.dp)
                     .size(40.dp)
-                    .clickable { println("Image") }
+                    .clickable {
+                        scope.launch(Dispatchers.IO) {
+                            val image = File("src/main/resources/andrasi_andras.jpg").readBytes()
+                            webSocketService.sendImage(image)
+                        }
+                    }
             )
 
             Icon(

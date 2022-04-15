@@ -2,6 +2,7 @@ package service
 
 import dto.MessageDTO
 import dto.toMessage
+import image_loader.ImageLoader
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
@@ -13,32 +14,63 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import model.Message
+import java.util.*
 
 class WebSocketService(private val client: HttpClient) {
     private val _messages: MutableStateFlow<List<Message>> = MutableStateFlow(emptyList())
     val messages = _messages.asStateFlow()
     private var socket: DefaultWebSocketSession? = null
 
+    private val images: MutableList<ByteArray> = mutableListOf()
+
     suspend fun join(roomId: String) {
         close()
         client.webSocket(method = HttpMethod.Get, host = "0.0.0.0", port = 9090, path = "/chat/room/$roomId") {
             socket = this
             incoming.consumeEach { frame ->
-                if (frame is Frame.Text) {
-                    val text = frame.readText()
+                when (frame) {
+                    is Frame.Text -> {
+                        val text = frame.readText()
 
-                    try {
-                        val messageDTO: MessageDTO = Json.decodeFromString(text)
-                        launch { _messages.emit(_messages.value + messageDTO.toMessage()) }
-                    } catch (e: Exception) {
-                        println(e.message)
+                        try {
+                            val messageDTO: MessageDTO = Json.decodeFromString(text)
+                            val message = messageDTO.toMessage()
+
+                            when (message.type) {
+                                "TEXT" -> launch { _messages.emit(_messages.value + message) }
+                                "IMAGE" -> {
+                                    if(images.isNotEmpty()) {
+                                        val image = images.first()
+                                        val uuid = ImageLoader.store(image)
+
+                                        launch {
+                                            _messages.emit(_messages.value + message.copy(
+                                                content = uuid.toString()
+                                            ))
+                                        }
+                                    }
+                                }
+                            }
+
+                        } catch (e: Exception) {
+                            println(e.message)
+                        }
+
+                        println(text)
                     }
-
-                    println(text)
+                    is Frame.Binary -> {
+                        val image = frame.readBytes()
+                        images.add(image)
+                    }
+                    else -> {}
                 }
             }
 
         }
+    }
+
+    suspend fun sendImage(image: ByteArray) {
+        socket?.send(image)
     }
 
     suspend fun sendMessage(messageText: String) {

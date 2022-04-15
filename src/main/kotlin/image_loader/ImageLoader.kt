@@ -8,6 +8,7 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import org.jetbrains.skia.Image
+import java.util.*
 
 object ImageLoader {
     private val images: MutableMap<String, ImageBitmap> = mutableMapOf()
@@ -22,4 +23,18 @@ object ImageLoader {
 
         return bitmap
     }
+
+    fun load(uuid: UUID): ImageBitmap? {
+        images[uuid.toString()]?.let { return it }
+        return null
+    }
+
+    fun store(bytes: ByteArray) : UUID {
+        val bitmap = Image.makeFromEncoded(bytes).toComposeImageBitmap()
+        val uuid = UUID.randomUUID()
+        images[uuid.toString()] = bitmap
+
+        return uuid
+    }
+
 }
