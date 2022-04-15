@@ -1,4 +1,4 @@
-package screen.sidebar.dialog
+package screen.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

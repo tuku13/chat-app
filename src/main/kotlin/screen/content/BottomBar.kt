@@ -28,6 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
+import screen.dialog.FileOpenDialog
 import service.ThemeService
 import service.WebSocketService
 import java.awt.FileDialog
@@ -42,6 +43,8 @@ fun BottomBar() {
     val webSocketService: WebSocketService by di.instance()
 
     val theme = themeService.theme.collectAsState()
+
+    var isFileOpenDialogOpen by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -66,8 +69,7 @@ fun BottomBar() {
                     .size(40.dp)
                     .clickable {
                         scope.launch(Dispatchers.IO) {
-                            val image = File("src/main/resources/andrasi_andras.jpg").readBytes()
-                            webSocketService.sendImage(image)
+                            isFileOpenDialogOpen = true
                         }
                     }
             )
@@ -84,6 +86,22 @@ fun BottomBar() {
             )
 
             var message by remember { mutableStateOf("") }
+
+            if(isFileOpenDialogOpen) {
+                FileOpenDialog { file ->
+                    isFileOpenDialogOpen = false
+                    if(file != null) {
+                        scope.launch(Dispatchers.IO) {
+                            try {
+                                val image = file.readBytes()
+                                webSocketService.sendImage(image)
+                            } catch (e: Exception) {
+
+                            }
+                        }
+                    }
+                }
+            }
 
             CompositionLocalProvider(
                 LocalTextSelectionColors provides TextSelectionColors(

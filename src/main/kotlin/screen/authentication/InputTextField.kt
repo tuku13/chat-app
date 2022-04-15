@@ -26,6 +26,7 @@ fun InputTextField(
     modifier: Modifier = Modifier,
     keyboardType: KeyboardType = KeyboardType.Text,
     label: String = "",
+    readOnly: Boolean = false
 ) {
     val themeService: ThemeService by localDI().instance()
     val theme = themeService.theme.collectAsState()
@@ -60,7 +61,8 @@ fun InputTextField(
                     text = label,
                     color = theme.value.body
                 )
-            }
+            },
+            readOnly = readOnly
         )
     }
 

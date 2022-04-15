@@ -14,9 +14,9 @@ import model.UserInfo
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import screen.main.MainViewModel
-import screen.sidebar.dialog.CreateGroupDialog
-import screen.sidebar.dialog.JoinGroupDialog
-import screen.sidebar.dialog.NewContactDialog
+import screen.dialog.CreateGroupDialog
+import screen.dialog.JoinGroupDialog
+import screen.dialog.NewContactDialog
 import service.ThemeService
 
 @Composable
