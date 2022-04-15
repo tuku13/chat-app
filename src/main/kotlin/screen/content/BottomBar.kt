@@ -30,6 +30,7 @@ import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import service.ThemeService
 import service.WebSocketService
+import java.awt.FileDialog
 
 @Composable
 fun BottomBar() {

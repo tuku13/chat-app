@@ -100,14 +100,14 @@ fun FullSizeSideBar(
 
                 Box(modifier = Modifier.height(16.dp))
 
-                if(isNewContactDialogOpen) {
+                if (isNewContactDialogOpen) {
                     NewContactDialog {
                         isNewContactDialogOpen = false
                         it?.let { addContact(it) }
                     }
                 }
 
-                if(isCreateGroupDialogOpen) {
+                if (isCreateGroupDialogOpen) {
                     CreateGroupDialog { groupName, users ->
                         isCreateGroupDialogOpen = false
                         scope.launch {
@@ -116,11 +116,11 @@ fun FullSizeSideBar(
                     }
                 }
 
-                if(isJoinGroupDialogOpen) {
+                if (isJoinGroupDialogOpen) {
                     JoinGroupDialog { roomId ->
                         isJoinGroupDialogOpen = false
-                        scope.launch {
-                            viewModel.joinRoom(roomId)
+                        if (roomId != null) {
+                            scope.launch { viewModel.joinRoom(roomId) }
                         }
                     }
                 }
