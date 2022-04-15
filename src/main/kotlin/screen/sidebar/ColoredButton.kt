@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import theme.Theme
@@ -20,7 +21,8 @@ fun ColoredButton(
     text: String,
     color: Color,
     theme: Theme,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    icon: ImageVector? = Icons.Default.Add
 ) {
     Button(
         onClick = onClick,
@@ -31,9 +33,11 @@ fun ColoredButton(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Default.Add, contentDescription = null, tint = theme.cursor
-            )
+            if(icon != null) {
+                Icon(
+                    imageVector = icon, contentDescription = null, tint = theme.cursor
+                )
+            }
             Text(
                 text = text, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = theme.cursor
             )

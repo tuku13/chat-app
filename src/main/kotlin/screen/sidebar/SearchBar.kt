@@ -49,8 +49,8 @@ fun SearchBar(
 
             CompositionLocalProvider(
                 LocalTextSelectionColors provides TextSelectionColors(
-                    handleColor = theme.blue,
-                    backgroundColor = theme.blue
+                    handleColor = Color.Black.copy(alpha = 0.2f),
+                    backgroundColor = Color.Black.copy(alpha = 0.2f)
                 )
             ) {
                 TextField(

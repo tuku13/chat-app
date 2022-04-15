@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 sealed class Theme(
     val green: Color,
     val blue: Color,
+    val red: Color,
     val background: Color,
     val textFieldBackground: Color,
     val title: Color,
@@ -18,6 +19,7 @@ sealed class Theme(
 object LightTheme : Theme(
     green = Color(0xFF99ECAF),
     blue = Color(0xFF99DCEC),
+    red = Color(0xFFDF8A8A),
     background = Color(0xFFFFFFFF),
     textFieldBackground = Color(0xFFE5E5E5),
     title = Color(0xFF000000),
@@ -31,6 +33,7 @@ object LightTheme : Theme(
 object DarkTheme : Theme(
     green = Color(0xFF136839),
     blue = Color(0xFF135868),
+    red = Color(0xFFDA4848),
     background = Color(0xFF36393F),
     textFieldBackground = Color(0xFF40444B),
     title = Color(0xFFFFFFFF),

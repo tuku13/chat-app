@@ -4,6 +4,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
@@ -18,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
@@ -27,6 +31,7 @@ import model.Room
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import repository.RoomRepository
+import screen.main.MainViewModel
 import service.AuthenticationService
 import service.ThemeService
 import theme.Theme
@@ -39,11 +44,11 @@ fun Header(
     val di = localDI()
 
     val authenticationService: AuthenticationService by di.instance()
-    val roomRepository: RoomRepository by di.instance()
     val themeService: ThemeService by di.instance()
 
+    val viewModel: MainViewModel by di.instance()
     val theme = themeService.theme
-    val scope: CoroutineScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
@@ -61,11 +66,45 @@ fun Header(
         ) {
             Box(modifier = Modifier.size(40.dp))
 
-            Text(
-                text = selectedRoom?.name ?: "",
-                fontSize = 18.sp,
-                color = theme.value.body
-            )
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = selectedRoom?.name ?: "",
+                    fontSize = 18.sp,
+                    color = theme.value.chatText
+                )
+
+                if (selectedRoom != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    CompositionLocalProvider(
+                        LocalTextSelectionColors provides TextSelectionColors(
+                            handleColor = Color.Black.copy(alpha = 0.2f),
+                            backgroundColor = Color.Black.copy(alpha = 0.2f)
+                        )
+                    ) {
+                        Row {
+                            Text(
+                                text = "Join code: ",
+                                fontSize = 14.sp,
+                                color = theme.value.body
+                            )
+                            SelectionContainer {
+                                Text(
+                                    text = selectedRoom.id,
+                                    fontSize = 14.sp,
+                                    color = theme.value.body,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                        }
+                    }
+                }
+            }
+
 
             var expanded by remember { mutableStateOf(false) }
 
@@ -95,7 +134,7 @@ fun Header(
 
                         selectedRoom?.let {
                             scope.launch(Dispatchers.IO) {
-                                roomRepository.leaveGroup(selectedRoom.id)
+                                viewModel.leaveGroup(selectedRoom.id)
                             }
                         }
 

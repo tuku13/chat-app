@@ -1,6 +1,7 @@
 package dto
 
 import BASE_URL
+import di.DIContainer
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -8,7 +9,6 @@ import io.ktor.client.request.*
 import kotlinx.serialization.Serializable
 import model.Message
 import model.toUserInfo
-import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import service.AuthenticationService
 

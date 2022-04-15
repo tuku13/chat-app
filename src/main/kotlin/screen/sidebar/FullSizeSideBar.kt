@@ -8,11 +8,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
-import dto.UserInfoDTO
+import kotlinx.coroutines.launch
 import model.Room
 import model.UserInfo
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
+import screen.main.MainViewModel
+import screen.sidebar.dialog.CreateGroupDialog
+import screen.sidebar.dialog.JoinGroupDialog
 import screen.sidebar.dialog.NewContactDialog
 import service.ThemeService
 
@@ -30,11 +33,13 @@ fun FullSizeSideBar(
     val themeService: ThemeService by di.instance()
 
     val theme = themeService.theme.value
+    val scope = rememberCoroutineScope()
     var query by remember { mutableStateOf("") }
     var isCreateGroupDialogOpen by remember { mutableStateOf(false) }
     var isJoinGroupDialogOpen by remember { mutableStateOf(false) }
     var isNewContactDialogOpen by remember { mutableStateOf(false) }
 
+    val viewModel: MainViewModel by di.instance()
 
     Column(
         modifier = Modifier.width(328.dp)
@@ -42,7 +47,6 @@ fun FullSizeSideBar(
             .background(theme.background)
             .border(BorderStroke(1.dp, color = theme.border))
     ) {
-
 
         SearchBar(
             onValueChange = { query = it },
@@ -72,7 +76,8 @@ fun FullSizeSideBar(
                 ColoredButton(
                     text = "Create Group",
                     color = theme.green,
-                    theme = theme
+                    theme = theme,
+                    onClick = { isCreateGroupDialogOpen = true }
                 )
 
                 Box(modifier = Modifier.height(16.dp))
@@ -81,6 +86,7 @@ fun FullSizeSideBar(
                     text = "Join Group",
                     color = theme.green,
                     theme = theme,
+                    onClick = { isJoinGroupDialogOpen = true }
                 )
 
                 Box(modifier = Modifier.height(16.dp))
@@ -102,11 +108,21 @@ fun FullSizeSideBar(
                 }
 
                 if(isCreateGroupDialogOpen) {
-                    CreateGroupDialog { isCreateGroupDialogOpen = false }
+                    CreateGroupDialog { groupName, users ->
+                        isCreateGroupDialogOpen = false
+                        scope.launch {
+                            viewModel.createRoom(groupName, users)
+                        }
+                    }
                 }
 
                 if(isJoinGroupDialogOpen) {
-                    CreateGroupDialog { isJoinGroupDialogOpen = false }
+                    JoinGroupDialog { roomId ->
+                        isJoinGroupDialogOpen = false
+                        scope.launch {
+                            viewModel.joinRoom(roomId)
+                        }
+                    }
                 }
             }
         }
