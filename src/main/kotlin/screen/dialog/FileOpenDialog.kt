@@ -8,11 +8,9 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.Image
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,7 +22,6 @@ import org.kodein.di.instance
 import screen.authentication.InputTextField
 import screen.sidebar.ColoredButton
 import service.ThemeService
-import theme.Theme
 import java.io.File
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -48,6 +45,7 @@ fun FileOpenDialog(
         var file by remember { mutableStateOf(File(".")) }
         var path by remember { mutableStateOf(file.absolutePath) }
         var selectedFile: File? by remember { mutableStateOf(null) }
+        var showDrives by remember { mutableStateOf(false) }
 
         Column(
             modifier = Modifier.fillMaxSize().background(theme.value.background).padding(16.dp)
@@ -63,47 +61,81 @@ fun FileOpenDialog(
                 modifier = Modifier.fillMaxWidth().weight(1.0f)
             ) {
                 val children = file.listFiles().filter {
-                    it.isDirectory || it.name.endsWith(".jpg") || it.name.endsWith(".jpg")
+                    it.isDirectory ||
+                            it.name.endsWith(".jpg", ignoreCase = true) ||
+                            it.name.endsWith(".jpg", ignoreCase = true) ||
+                            it.name.endsWith(".webp", ignoreCase = true) ||
+                            it.name.endsWith(".gif", ignoreCase = true)
                 }
 
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
+                if(showDrives) {
+                    val drives = File.listRoots()
+                    item {
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.combinedClickable(
-                            onClick = { },
-                            onDoubleClick = {
-                                file = file.parentFile
-                                path = file.absolutePath
-                            }
-                        )
-                    ) {
-                        Icon(
-                            Icons.Default.Folder,
-                            "Parent Folder"
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Text(
-                            text = "...",
-                            color = theme.value.body,
-                            fontSize = 14.sp
+                    items(drives) { drive ->
+                        DriveRow(
+                            file = drive,
+                            theme = theme.value,
+                            onDirectoryDoubleClick = {
+                                showDrives = false
+                                path = it.absolutePath
+                                file = it
+                            },
                         )
                     }
-                }
+                } else {
+                    item {
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                items(children) { child ->
-                    FileRow(
-                        file = child,
-                        theme = theme.value,
-                        selectedFile = selectedFile,
-                        onDirectoryDoubleClick = {
-                            path = it.absolutePath
-                            file = it
-                        },
-                        onFileClick = { selectedFile = it }
-                    )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .combinedClickable(
+                                    onClick = { },
+                                    onDoubleClick = {
+                                        try {
+                                            val parentFile = file.absoluteFile.parentFile
+                                            if (parentFile == null) {
+                                                showDrives = true
+//                                            File.listRoots().forEach { println(it) }
+                                            } else {
+                                                file = parentFile
+                                                path = file.absolutePath
+                                            }
+                                        } catch (e: Exception) {
+                                            println("${file.absoluteFile}, exception: ${e.message}")
+                                        }
+                                    }
+                                )
+                        ) {
+                            Icon(
+                                Icons.Default.Folder,
+                                "Parent Folder"
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Text(
+                                text = "...",
+                                color = theme.value.body,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                    items(children) { child ->
+                        FileRow(
+                            file = child,
+                            theme = theme.value,
+                            selectedFile = selectedFile,
+                            onDirectoryDoubleClick = {
+                                path = it.absolutePath
+                                file = it
+                            },
+                            onFileClick = { selectedFile = it }
+                        )
+                    }
                 }
             }
 
@@ -121,76 +153,5 @@ fun FileOpenDialog(
                 )
             }
         }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun FileRow(
-    file: File,
-    selectedFile: File?,
-    theme: Theme,
-    onDirectoryDoubleClick: (File) -> Unit,
-    onFileClick: (File) -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(32.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
-    ) {
-        when {
-            file.isDirectory -> {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .combinedClickable(
-                            onClick = { },
-                            onDoubleClick = { onDirectoryDoubleClick(file) }
-                        )
-                        .height(32.dp)
-                        .fillMaxWidth()
-                ) {
-                    Icon(
-                        Icons.Default.Folder,
-                        "Folder"
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = file.name,
-                        color = theme.body,
-                        fontSize = 14.sp
-                    )
-                }
-            }
-
-            file.isFile -> {
-                val backgroundColor = if (file == selectedFile) Color.Black.copy(alpha = 0.2f) else Color.Transparent
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clickable { onFileClick(file) }
-                        .fillMaxWidth()
-                        .height(32.dp)
-                        .background(backgroundColor)
-                ) {
-                    Icon(
-                        Icons.Default.Image,
-                        "Image"
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = file.name,
-                        color = theme.body,
-                        fontSize = 14.sp
-                    )
-                }
-            }
-        }
-
     }
 }

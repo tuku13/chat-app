@@ -2,7 +2,6 @@ package repository
 
 import BASE_URL
 import dto.RoomDTO
-import dto.UserInfoDTO
 import dto.toRoom
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -13,10 +12,9 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import model.Room
-import model.UserInfo
+import model.User
 import service.AuthenticationService
 import util.NetworkResult
-import java.io.File.separator
 
 class RoomRepository(
     private val client: HttpClient,
@@ -33,7 +31,6 @@ class RoomRepository(
             roomDTOs.map {
                 it.toRoom(
                     client = client,
-                    userId = "624f2c95fce1a1538a285cd1"
                 )
             }
         } catch (e: ResponseException) {
@@ -70,10 +67,10 @@ class RoomRepository(
         return NetworkResult.Success(false)
     }
 
-    suspend fun addContact(contactInfo: UserInfo): NetworkResult<Boolean> {
+    suspend fun addContact(contactInfo: User): NetworkResult<Boolean> {
         return createGroup(
             members = listOf(contactInfo.id),
-            roomName = "${authenticationService.userInfo.value.name}, ${contactInfo.name}"
+            roomName = "${authenticationService.user.value.name}, ${contactInfo.name}"
         )
     }
 

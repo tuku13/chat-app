@@ -10,7 +10,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import model.Room
-import model.UserInfo
+import model.User
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import screen.main.MainViewModel
@@ -26,7 +26,7 @@ fun FullSizeSideBar(
     rooms: List<Room>,
     selectedRoom: Room?,
     selectRoom: (Room) -> Unit,
-    addContact: (UserInfo) -> Unit
+    addContact: (User) -> Unit
 ) {
     val di = localDI()
 

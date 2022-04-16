@@ -1,13 +1,9 @@
 package screen.dialog
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -22,12 +18,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.WindowSize
 import androidx.compose.ui.window.rememberDialogState
-import dto.UserInfoDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import model.UserInfo
+import model.User
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import screen.authentication.InputTextField
@@ -38,7 +32,7 @@ import util.NetworkResult
 
 @Composable
 fun NewContactDialog(
-    onCloseRequest: (UserInfo?) -> Unit
+    onCloseRequest: (User?) -> Unit
 ) {
     val di = localDI()
 
@@ -49,8 +43,8 @@ fun NewContactDialog(
     val theme = themeService.theme.collectAsState()
 
     var query by remember { mutableStateOf("") }
-    var userInfos by remember { mutableStateOf(listOf<UserInfo>()) }
-    var selectedUser: UserInfo? by remember { mutableStateOf(null) }
+    var users by remember { mutableStateOf(listOf<User>()) }
+    var selectedUser: User? by remember { mutableStateOf(null) }
 
     Dialog(
         onCloseRequest = { onCloseRequest(selectedUser) },
@@ -91,7 +85,7 @@ fun NewContactDialog(
                         scope.launch(Dispatchers.IO) {
                             when (val response = userService.findUser(query, query)) {
                                 is NetworkResult.Success -> {
-                                    userInfos = response.value
+                                    users = response.value
                                 }
                                 is NetworkResult.Error -> {}
                             }
@@ -108,8 +102,8 @@ fun NewContactDialog(
             }
 
             LazyColumn {
-                items(userInfos.size) { index ->
-                    val userInfoDTO = userInfos[index]
+                items(users.size) { index ->
+                    val userInfoDTO = users[index]
                     val backgroundColor =
                         if (selectedUser == userInfoDTO) Color.Black.copy(alpha = 0.2f) else Color.Transparent
                     Row(

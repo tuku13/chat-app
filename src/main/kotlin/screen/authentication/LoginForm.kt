@@ -32,8 +32,8 @@ fun LoginForm(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        var email by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
+        var email by remember { mutableStateOf("pece@email.com") }
+        var password by remember { mutableStateOf("password") }
 
         Card(
             elevation = 1.dp,

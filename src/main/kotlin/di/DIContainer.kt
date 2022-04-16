@@ -14,10 +14,7 @@ import repository.MessageRepository
 import repository.RoomRepository
 import screen.authentication.AuthenticationViewModel
 import screen.main.MainViewModel
-import service.AuthenticationService
-import service.ThemeService
-import service.UserService
-import service.WebSocketService
+import service.*
 
 object DIContainer {
     val di = DI {
@@ -86,6 +83,11 @@ object DIContainer {
         bindSingleton {
             val client: HttpClient by di.instance()
             WebSocketService(client)
+        }
+
+        bindSingleton {
+            val client: HttpClient by di.instance()
+            ImageService(client)
         }
 
     }

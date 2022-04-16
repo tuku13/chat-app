@@ -2,7 +2,6 @@ package service
 
 import dto.MessageDTO
 import dto.toMessage
-import image_loader.ImageLoader
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
@@ -14,7 +13,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import model.Message
-import java.util.*
 
 class WebSocketService(private val client: HttpClient) {
     private val _messages: MutableStateFlow<List<Message>> = MutableStateFlow(emptyList())

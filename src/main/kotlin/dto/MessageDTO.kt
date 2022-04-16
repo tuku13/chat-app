@@ -8,7 +8,7 @@ import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import kotlinx.serialization.Serializable
 import model.Message
-import model.toUserInfo
+import model.toUserDTO
 import org.kodein.di.instance
 import service.AuthenticationService
 
@@ -30,9 +30,9 @@ suspend fun MessageDTO.toMessage(): Message {
     var senderName = ""
 
     try {
-        val userInfoDTO: UserInfoDTO = client.post("$BASE_URL/user/${senderId}").body()
+        val userDTO: UserDTO = client.post("$BASE_URL/user/${senderId}").body()
 
-        senderName = userInfoDTO.toUserInfo().name
+        senderName = userDTO.toUserDTO().name
 
     } catch (e: ResponseException) {
         println("Error converting $this ti Message, Exception: ${e.message}")

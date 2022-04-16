@@ -59,20 +59,16 @@ fun BottomBar() {
             verticalAlignment = Alignment.Bottom,
         ) {
 
-            Icon(
-                tint = theme.value.blue,
-                imageVector = Icons.Default.AttachFile,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 8.dp)
-                    .size(40.dp)
-                    .clickable {
-                        scope.launch(Dispatchers.IO) {
-                            isFileOpenDialogOpen = true
-                        }
-                    }
-            )
+//            Icon(
+//                tint = theme.value.blue,
+//                imageVector = Icons.Default.AttachFile,
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .padding(horizontal = 8.dp)
+//                    .padding(bottom = 8.dp)
+//                    .size(40.dp)
+//                    .clickable { scope.launch(Dispatchers.IO) { isFileOpenDialogOpen = true } }
+//            )
 
             Icon(
                 tint = theme.value.blue,
@@ -82,7 +78,7 @@ fun BottomBar() {
                     .padding(horizontal = 8.dp)
                     .padding(bottom = 8.dp)
                     .size(40.dp)
-                    .clickable { println("GIF") }
+                    .clickable { scope.launch(Dispatchers.IO) { isFileOpenDialogOpen = true } }
             )
 
             var message by remember { mutableStateOf("") }
@@ -96,7 +92,7 @@ fun BottomBar() {
                                 val image = file.readBytes()
                                 webSocketService.sendImage(image)
                             } catch (e: Exception) {
-
+                                println(e.message)
                             }
                         }
                     }

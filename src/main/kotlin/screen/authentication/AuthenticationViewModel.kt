@@ -10,8 +10,8 @@ class AuthenticationViewModel(
         return authenticationService.login(email, password)
     }
 
-    suspend fun register(username: String, email: String, password: String): NetworkResult<Boolean> {
-        return authenticationService.register(username, email, password)
+    suspend fun register(username: String, email: String, password: String, image: String): NetworkResult<Boolean> {
+        return authenticationService.register(username, email, password, image)
     }
 
 }

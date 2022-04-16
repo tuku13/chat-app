@@ -1,17 +1,11 @@
 package screen.dialog
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +19,7 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberDialogState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import model.UserInfo
+import model.User
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import screen.authentication.InputTextField
@@ -34,11 +28,10 @@ import service.AuthenticationService
 import service.ThemeService
 import service.UserService
 import util.NetworkResult
-import java.awt.SystemColor.text
 
 @Composable
 fun CreateGroupDialog(
-    onCloseRequest: (String, List<UserInfo>) -> Unit
+    onCloseRequest: (String, List<User>) -> Unit
 ) {
     val di = localDI()
 
@@ -52,9 +45,9 @@ fun CreateGroupDialog(
 
     var query by remember { mutableStateOf("") }
     var groupName by remember { mutableStateOf("") }
-    var addedUsers by remember { mutableStateOf<List<UserInfo>>(emptyList()) }
+    var addedUsers by remember { mutableStateOf<List<User>>(emptyList()) }
 
-    var userInfos by remember { mutableStateOf(listOf<UserInfo>()) }
+    var users by remember { mutableStateOf(listOf<User>()) }
 
 
     Dialog(
@@ -99,7 +92,7 @@ fun CreateGroupDialog(
                             scope.launch(Dispatchers.IO) {
                                 when (val response = userService.findUser(query, query)) {
                                     is NetworkResult.Success -> {
-                                        userInfos = response.value
+                                        users = response.value
                                     }
                                     is NetworkResult.Error -> {}
                                 }
@@ -110,8 +103,8 @@ fun CreateGroupDialog(
                 }
 
                 LazyColumn {
-                    items(userInfos.size) { index ->
-                        val userInfoDTO = userInfos[index]
+                    items(users.size) { index ->
+                        val userInfoDTO = users[index]
 
                         if (!addedUsers.contains(userInfoDTO) && userInfoDTO.id != authenticationService.userId) {
                             Row(

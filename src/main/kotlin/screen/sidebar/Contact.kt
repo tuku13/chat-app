@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import image.NetworkImage
+import image.ProfileImage
 import model.Room
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
@@ -30,7 +32,7 @@ fun Contact(
     val themeService: ThemeService by di.instance()
 
     val theme = themeService.theme
-    val message = if (room.messages.isEmpty()) null else room.messages.last()
+    val message = if (room.messages.none { it.type == "TEXT" }) null else room.messages.last { it.type == "TEXT" }
     val backgroundColor = if(selected) Color.Black.copy(alpha = 0.2f) else theme.value.background
 
     Box(
@@ -43,11 +45,15 @@ fun Contact(
             .clickable { onClick(room) }
     ) {
         Row {
-            Box(modifier = Modifier.padding(8.dp)) {
-                NetworkImage(
-                    url = "https://lh3.googleusercontent.com/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc=w600",
+            Box(modifier = Modifier.padding(8.dp).size(64.dp)) {
+                ProfileImage(
+                    userId = room.userIds[0],
                     modifier = Modifier.clip(CircleShape)
                 )
+//                NetworkImage(
+//                    url = "https://lh3.googleusercontent.com/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc=w600",
+//                    modifier = Modifier.clip(CircleShape)
+//                )
             }
 
             Column(

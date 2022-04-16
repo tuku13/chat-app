@@ -1,7 +1,7 @@
 package service
 
 import BASE_URL
-import dto.UserInfoDTO
+import dto.UserDTO
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -12,8 +12,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import model.UserInfo
-import model.toUserInfo
+import model.User
+import model.toUserDTO
 import util.NetworkResult
 
 class AuthenticationService(
@@ -27,9 +27,9 @@ class AuthenticationService(
     val userId
         get() = _userId
 
-    private var _userInfo: MutableStateFlow<UserInfo> = MutableStateFlow(UserInfo("", "", ""))
-    val userInfo: StateFlow<UserInfo>
-        get() = _userInfo
+    private var _user: MutableStateFlow<User> = MutableStateFlow(User("", "", "", ""))
+    val user: StateFlow<User>
+        get() = _user
 
 
     suspend fun login(email: String, password: String): NetworkResult<Boolean> {
@@ -48,8 +48,8 @@ class AuthenticationService(
                 println(authenticated.value)
                 _userId = response.body()
 
-                val userInfoDTO: UserInfoDTO = client.post("$BASE_URL/user/$_userId").body()
-                _userInfo.emit(userInfoDTO.toUserInfo())
+                val userDTO: UserDTO = client.post("$BASE_URL/user/$_userId").body()
+                _user.emit(userDTO.toUser())
 
                 return NetworkResult.Success(true)
             }
@@ -64,7 +64,7 @@ class AuthenticationService(
         return NetworkResult.Success(true)
     }
 
-    suspend fun register(username: String, email: String, password: String): NetworkResult<Boolean> {
+    suspend fun register(username: String, email: String, password: String, image: String): NetworkResult<Boolean> {
         try {
             val response: HttpResponse = client.submitForm(
                 url = "$BASE_URL/register",
@@ -72,6 +72,7 @@ class AuthenticationService(
                     append("username", username)
                     append("email", email)
                     append("password", password)
+                    append("image", image)
                 }
             )
 
@@ -95,10 +96,7 @@ class AuthenticationService(
             }
 
             if(response.status == HttpStatusCode.OK) {
-                println(authenticated.value)
-
                 _authenticated.emit(false)
-                println(authenticated.value)
                 return NetworkResult.Success(true)
             }
 

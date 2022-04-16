@@ -3,11 +3,8 @@ package screen.sidebar
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DoubleArrow
@@ -17,11 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import image.NetworkImage
+import image.ProfileImage
 import model.Room
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import service.ThemeService
-import theme.Theme
 
 @Composable
 fun CollapsedSideBar(
@@ -80,9 +78,10 @@ fun CollapsedSideBar(
                             .border(BorderStroke(1.dp, theme.value.border))
                             .background(backgroundColor)
                             .padding(8.dp)
+                            .size(64.dp)
                     ) {
-                        NetworkImage(
-                            url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvBvDyztL89oD6gnCtsAI8WEd2mo_3TBcWff3wPPGxE2R-6D0ZiZcCmcO9InCciDDgwjs&usqp=CAU",
+                        ProfileImage(
+                            userId = room.userIds[0],
                             modifier = Modifier.clip(CircleShape)
                         )
                     }

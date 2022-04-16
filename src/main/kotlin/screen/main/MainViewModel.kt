@@ -1,10 +1,9 @@
 package screen.main
 
-import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import model.Room
-import model.UserInfo
+import model.User
 import repository.RoomRepository
 import util.NetworkResult
 
@@ -24,7 +23,7 @@ class MainViewModel(
         _rooms.emit(rooms)
     }
 
-    suspend fun addContact(contactInfo: UserInfo) {
+    suspend fun addContact(contactInfo: User) {
         when (roomRepository.addContact(contactInfo)) {
             is NetworkResult.Success -> refreshRooms()
             else -> { }
@@ -35,12 +34,12 @@ class MainViewModel(
         _selectedRoom.tryEmit(room)
     }
 
-    suspend fun createRoom(roomName: String, userInfoDTOs: List<UserInfo>) {
-        if(roomName.isEmpty() || userInfoDTOs.isEmpty()) {
+    suspend fun createRoom(roomName: String, users: List<User>) {
+        if(roomName.isEmpty() || users.isEmpty()) {
             return
         }
 
-        val users = userInfoDTOs.map { it.id }
+        val users = users.map { it.id }
         roomRepository.createGroup(users, roomName)
         refreshRooms()
     }

@@ -2,7 +2,9 @@ package screen.authentication
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -18,12 +20,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.*
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import screen.dialog.FileOpenDialog
+import image.LocalImage
 import theme.Theme
+import java.util.*
 
 @Composable
 fun RegisterForm(
     theme: Theme,
-    onSubmit: (String, String, String) -> Unit
+    onSubmit: (String, String, String, String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -35,6 +42,10 @@ fun RegisterForm(
         var username by remember { mutableStateOf("") }
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
+
+        var imageBase64Encoded by remember { mutableStateOf("") }
+        var isFileOpenDialogOpen by remember { mutableStateOf(false) }
+
 
         Card(
             elevation = 1.dp,
@@ -79,10 +90,53 @@ fun RegisterForm(
                     label = "Password"
                 )
 
+                Row(
+                    modifier = Modifier.padding(bottom = 16.dp).background(theme.background),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .border(BorderStroke(1.dp, Color.Red))
+                            .size(40.dp)
+                    ) {
+                        LocalImage(
+                            byteArray = Base64.getDecoder().decode(imageBase64Encoded.toByteArray()),
+                            modifier = Modifier.clip(CircleShape)
+                        )
+                    }
+
+                    Button(
+                        modifier = Modifier.padding(start = 16.dp),
+                        onClick = { isFileOpenDialogOpen = true },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = theme.blue,
+                            contentColor = theme.title
+                        )
+                    ) {
+                        Text(
+                            text = "Upload Profile Picture",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            color = theme.title
+                        )
+                    }
+
+                }
+
+                if(isFileOpenDialogOpen) {
+                    FileOpenDialog { file ->
+                        isFileOpenDialogOpen = false
+                        if(file != null) {
+                            imageBase64Encoded = Base64.getEncoder().encodeToString(file.readBytes())
+                        }
+                    }
+                }
+
                 Button(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally),
-                    onClick = { onSubmit(username, email, password) },
+                    onClick = { onSubmit(username, email, password, imageBase64Encoded) },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = theme.green,
                         contentColor = theme.title

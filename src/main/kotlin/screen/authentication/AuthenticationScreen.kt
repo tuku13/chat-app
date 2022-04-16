@@ -62,9 +62,9 @@ fun AuthenticationScreen() {
 
         RegisterForm(
             theme = theme.value,
-            onSubmit = { username, email, password ->
+            onSubmit = { username, email, password, image ->
                 scope.launch(Dispatchers.IO) {
-                    when(val registerResult = viewModel.register(username, email, password)) {
+                    when(val registerResult = viewModel.register(username, email, password, image)) {
                         is NetworkResult.Success -> {
                             val loginResult = viewModel.login(email, password)
                             if(loginResult is NetworkResult.Error) {
