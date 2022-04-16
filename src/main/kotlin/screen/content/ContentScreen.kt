@@ -18,7 +18,7 @@ fun ContentScreen(
             .fillMaxHeight()
             .background(theme.background)
     ) {
-        Header(selectedRoom, changeTheme)
+        Header(changeTheme)
 
         Conversation(modifier = Modifier.weight(1.0f), selectedRoom)
 

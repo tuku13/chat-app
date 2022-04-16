@@ -26,7 +26,7 @@ import java.io.File
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FileOpenDialog(
+fun ImageOpenDialog(
     onCloseRequest: (File?) -> Unit
 ) {
     Dialog(
@@ -100,7 +100,6 @@ fun FileOpenDialog(
                                             val parentFile = file.absoluteFile.parentFile
                                             if (parentFile == null) {
                                                 showDrives = true
-//                                            File.listRoots().forEach { println(it) }
                                             } else {
                                                 file = parentFile
                                                 path = file.absolutePath
@@ -112,8 +111,9 @@ fun FileOpenDialog(
                                 )
                         ) {
                             Icon(
-                                Icons.Default.Folder,
-                                "Parent Folder"
+                                imageVector = Icons.Default.Folder,
+                                contentDescription = "Parent Folder",
+                                tint = theme.value.body
                             )
                             Spacer(modifier = Modifier.width(8.dp))
 

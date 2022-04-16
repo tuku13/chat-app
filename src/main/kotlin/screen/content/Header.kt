@@ -24,21 +24,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import model.Room
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import repository.RoomRepository
 import screen.main.MainViewModel
 import service.AuthenticationService
 import service.ThemeService
-import theme.Theme
 
 @Composable
 fun Header(
-    selectedRoom: Room?,
     changeTheme: () -> Unit,
 ) {
     val di = localDI()
@@ -47,6 +43,8 @@ fun Header(
     val themeService: ThemeService by di.instance()
 
     val viewModel: MainViewModel by di.instance()
+
+    val selectedRoom = viewModel.selectedRoom.collectAsState()
     val theme = themeService.theme
     val scope = rememberCoroutineScope()
 
@@ -71,36 +69,34 @@ fun Header(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = selectedRoom?.name ?: "",
+                    text = selectedRoom.value?.name ?: "",
                     fontSize = 18.sp,
                     color = theme.value.chatText
                 )
 
-                if (selectedRoom != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                    CompositionLocalProvider(
-                        LocalTextSelectionColors provides TextSelectionColors(
-                            handleColor = Color.Black.copy(alpha = 0.2f),
-                            backgroundColor = Color.Black.copy(alpha = 0.2f)
+                CompositionLocalProvider(
+                    LocalTextSelectionColors provides TextSelectionColors(
+                        handleColor = Color.Black.copy(alpha = 0.2f),
+                        backgroundColor = Color.Black.copy(alpha = 0.2f)
+                    )
+                ) {
+                    Row {
+                        Text(
+                            text = if (selectedRoom.value != null) "Join code: " else "",
+                            fontSize = 14.sp,
+                            color = theme.value.body
                         )
-                    ) {
-                        Row {
+                        SelectionContainer {
                             Text(
-                                text = "Join code: ",
+                                text = selectedRoom.value?.id ?: "",
                                 fontSize = 14.sp,
-                                color = theme.value.body
+                                color = theme.value.body,
+                                fontWeight = FontWeight.Bold
                             )
-                            SelectionContainer {
-                                Text(
-                                    text = selectedRoom.id,
-                                    fontSize = 14.sp,
-                                    color = theme.value.body,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-
                         }
+
                     }
                 }
             }
@@ -132,9 +128,9 @@ fun Header(
                     DropdownMenuItem(onClick = {
                         expanded = false
 
-                        selectedRoom?.let {
+                        selectedRoom.value?.let {
                             scope.launch(Dispatchers.IO) {
-                                viewModel.leaveGroup(selectedRoom.id)
+                                viewModel.leaveGroup(it.id)
                             }
                         }
 
@@ -147,9 +143,9 @@ fun Header(
 
                     DropdownMenuItem(onClick = {
                         expanded = false
-
                         scope.launch(Dispatchers.IO) {
                             authenticationService.logout()
+                            viewModel.selectRoom(null)
                         }
                     }) {
                         Text(

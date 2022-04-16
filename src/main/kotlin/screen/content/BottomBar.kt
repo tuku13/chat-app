@@ -13,7 +13,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
@@ -28,11 +27,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import screen.dialog.FileOpenDialog
+import screen.dialog.ImageOpenDialog
 import service.ThemeService
 import service.WebSocketService
-import java.awt.FileDialog
-import java.io.File
 
 @Composable
 fun BottomBar() {
@@ -58,18 +55,6 @@ fun BottomBar() {
                 .wrapContentHeight(),
             verticalAlignment = Alignment.Bottom,
         ) {
-
-//            Icon(
-//                tint = theme.value.blue,
-//                imageVector = Icons.Default.AttachFile,
-//                contentDescription = null,
-//                modifier = Modifier
-//                    .padding(horizontal = 8.dp)
-//                    .padding(bottom = 8.dp)
-//                    .size(40.dp)
-//                    .clickable { scope.launch(Dispatchers.IO) { isFileOpenDialogOpen = true } }
-//            )
-
             Icon(
                 tint = theme.value.blue,
                 imageVector = Icons.Default.ImageSearch,
@@ -84,7 +69,7 @@ fun BottomBar() {
             var message by remember { mutableStateOf("") }
 
             if(isFileOpenDialogOpen) {
-                FileOpenDialog { file ->
+                ImageOpenDialog { file ->
                     isFileOpenDialogOpen = false
                     if(file != null) {
                         scope.launch(Dispatchers.IO) {

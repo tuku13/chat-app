@@ -48,8 +48,9 @@ fun FileRow(
                         .fillMaxWidth()
                 ) {
                     Icon(
-                        Icons.Default.Folder,
-                        "Folder"
+                        imageVector = Icons.Default.Folder,
+                        contentDescription = "Folder",
+                        tint = theme.body
                     )
                     Spacer(modifier = Modifier.width(8.dp))
 
@@ -72,8 +73,9 @@ fun FileRow(
                         .background(backgroundColor)
                 ) {
                     Icon(
-                        Icons.Default.Image,
-                        "Image"
+                        imageVector = Icons.Default.Image,
+                        contentDescription = "Image",
+                        tint = theme.body
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))

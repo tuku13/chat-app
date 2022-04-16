@@ -30,7 +30,7 @@ class MainViewModel(
         }
     }
 
-    fun selectRoom(room: Room) {
+    fun selectRoom(room: Room?) {
         _selectedRoom.tryEmit(room)
     }
 
@@ -39,12 +39,13 @@ class MainViewModel(
             return
         }
 
-        val users = users.map { it.id }
-        roomRepository.createGroup(users, roomName)
+        val members = users.map { it.id }
+        roomRepository.createGroup(members, roomName)
         refreshRooms()
     }
 
     suspend fun leaveGroup(roomId: String) {
+        _selectedRoom.emit(null)
         roomRepository.leaveGroup(roomId)
         refreshRooms()
     }

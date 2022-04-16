@@ -41,8 +41,9 @@ fun DriveRow(
                 .fillMaxWidth()
         ) {
             Icon(
-                Icons.Default.Storage,
-                "Drive"
+                imageVector = Icons.Default.Storage,
+                contentDescription = "Drive",
+                tint = theme.body
             )
             Spacer(modifier = Modifier.width(8.dp))
 

@@ -2,7 +2,6 @@ package screen.authentication
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,8 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import screen.dialog.FileOpenDialog
+import screen.dialog.ImageOpenDialog
 import image.LocalImage
 import theme.Theme
 import java.util.*
@@ -45,7 +43,6 @@ fun RegisterForm(
 
         var imageBase64Encoded by remember { mutableStateOf("") }
         var isFileOpenDialogOpen by remember { mutableStateOf(false) }
-
 
         Card(
             elevation = 1.dp,
@@ -97,7 +94,7 @@ fun RegisterForm(
                 ) {
                     Box(
                         modifier = Modifier
-                            .border(BorderStroke(1.dp, Color.Red))
+                            .background(theme.textFieldBackground)
                             .size(40.dp)
                     ) {
                         LocalImage(
@@ -107,7 +104,7 @@ fun RegisterForm(
                     }
 
                     Button(
-                        modifier = Modifier.padding(start = 16.dp),
+                        modifier = Modifier.padding(start = 32.dp),
                         onClick = { isFileOpenDialogOpen = true },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = theme.blue,
@@ -125,7 +122,7 @@ fun RegisterForm(
                 }
 
                 if(isFileOpenDialogOpen) {
-                    FileOpenDialog { file ->
+                    ImageOpenDialog { file ->
                         isFileOpenDialogOpen = false
                         if(file != null) {
                             imageBase64Encoded = Base64.getEncoder().encodeToString(file.readBytes())
