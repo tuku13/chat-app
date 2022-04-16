@@ -47,6 +47,10 @@ class WebSocketService(private val client: HttpClient) {
         }
     }
 
+    suspend fun clearMessages() {
+        _messages.emit(emptyList())
+    }
+
     suspend fun sendImage(image: ByteArray) {
         socket?.send(image)
     }

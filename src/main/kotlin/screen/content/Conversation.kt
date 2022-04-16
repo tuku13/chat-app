@@ -36,6 +36,7 @@ fun Conversation(
         val scrollState = rememberLazyListState()
 
         LaunchedEffect(selectedRoom) {
+            webSocketService.clearMessages()
             selectedRoom?.let { webSocketService.join(it.id) }
         }
 
