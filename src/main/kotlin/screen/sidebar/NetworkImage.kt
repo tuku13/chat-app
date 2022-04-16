@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageBitmapConfig
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,27 +44,15 @@ fun NetworkImage(
 
 @Composable
 fun LocalImage(
-    uuid: UUID,
+    byteArray: ByteArray,
     modifier: Modifier = Modifier,
 ) {
-    val bitmap = ImageLoader.load(uuid)
 
-    if (bitmap != null) {
-        Image(
-            bitmap = bitmap,
-            contentDescription = null,
-            modifier = modifier
-        )
-    } else {
-        Box(
-            modifier = Modifier.padding(8.dp).background(Color.Red).padding(8.dp)
-        ) {
-            Text(
-                text = "Image unavailable",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
-        }
-    }
+    val bitmap = org.jetbrains.skia.Image.makeFromEncoded(byteArray).toComposeImageBitmap()
+
+    Image(
+        bitmap = bitmap,
+        contentDescription = null,
+        modifier = modifier
+    )
 }

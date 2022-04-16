@@ -21,8 +21,6 @@ class WebSocketService(private val client: HttpClient) {
     val messages = _messages.asStateFlow()
     private var socket: DefaultWebSocketSession? = null
 
-    private val images: MutableList<ByteArray> = mutableListOf()
-
     suspend fun join(roomId: String) {
         close()
         client.webSocket(method = HttpMethod.Get, host = "0.0.0.0", port = 9090, path = "/chat/room/$roomId") {
@@ -36,31 +34,13 @@ class WebSocketService(private val client: HttpClient) {
                             val messageDTO: MessageDTO = Json.decodeFromString(text)
                             val message = messageDTO.toMessage()
 
-                            when (message.type) {
-                                "TEXT" -> launch { _messages.emit(_messages.value + message) }
-                                "IMAGE" -> {
-                                    if(images.isNotEmpty()) {
-                                        val image = images.first()
-                                        val uuid = ImageLoader.store(image)
-
-                                        launch {
-                                            _messages.emit(_messages.value + message.copy(
-                                                content = uuid.toString()
-                                            ))
-                                        }
-                                    }
-                                }
-                            }
+                            launch { _messages.emit(_messages.value + message) }
 
                         } catch (e: Exception) {
                             println(e.message)
                         }
 
                         println(text)
-                    }
-                    is Frame.Binary -> {
-                        val image = frame.readBytes()
-                        images.add(image)
                     }
                     else -> {}
                 }

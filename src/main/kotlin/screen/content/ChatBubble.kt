@@ -28,7 +28,6 @@ fun ChatBubble(message: Message) {
 
     val theme = themeService.theme
 
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (message.isReceived) Arrangement.Start else Arrangement.End
@@ -78,14 +77,11 @@ fun ChatBubble(message: Message) {
                         }
 
                         when(message.type) {
-                            "IMAGE" -> {
-                                val uuid = UUIDFromString(message.content)
-                                if(uuid != UUID.fromString("")) {
-                                    LocalImage(
-                                        uuid = uuid,
-                                        modifier = Modifier.padding(16.dp).widthIn(max = 512.dp).heightIn(max = 512.dp)
-                                    )
-                                }
+                            "BINARY" -> {
+                                LocalImage(
+                                    byteArray = Base64.getDecoder().decode(message.content),
+                                    modifier = Modifier.padding(16.dp).widthIn(max = 512.dp).heightIn(max = 512.dp)
+                                )
                             }
                             else -> {
                                 Text(

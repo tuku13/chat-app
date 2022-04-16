@@ -24,17 +24,17 @@ object ImageLoader {
         return bitmap
     }
 
-    fun load(uuid: UUID): ImageBitmap? {
-        images[uuid.toString()]?.let { return it }
-        return null
-    }
+//    fun load(uuid: UUID): ImageBitmap? {
+//        images[uuid.toString()]?.let { return it }
+//        return null
+//    }
 
-    fun store(bytes: ByteArray) : UUID {
-        val bitmap = Image.makeFromEncoded(bytes).toComposeImageBitmap()
-        val uuid = UUID.randomUUID()
-        images[uuid.toString()] = bitmap
-
-        return uuid
-    }
+//    fun store(bytes: ByteArray) : UUID {
+//        val bitmap = Image.makeFromEncoded(bytes).toComposeImageBitmap()
+//        val uuid = UUID.randomUUID()
+//        images[uuid.toString()] = bitmap
+//
+//        return uuid
+//    }
 
 }
