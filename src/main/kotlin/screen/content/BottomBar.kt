@@ -20,8 +20,13 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,6 +36,7 @@ import screen.dialog.ImageOpenDialog
 import service.ThemeService
 import service.WebSocketService
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BottomBar() {
     val di = localDI()
@@ -42,12 +48,24 @@ fun BottomBar() {
     val theme = themeService.theme.collectAsState()
 
     var isFileOpenDialogOpen by remember { mutableStateOf(false) }
+    var message by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .border(BorderStroke(1.dp, color = theme.value.border))
+            .onKeyEvent {
+                if(it.key == Key.Enter && it.isCtrlPressed && message.isNotBlank()) {
+                    val messageText = message
+                    scope.launch {
+                        webSocketService.sendMessage(messageText)
+                    }
+                    message = ""
+                    return@onKeyEvent true
+                }
+                return@onKeyEvent false
+            }
     ) {
         Row(
             modifier = Modifier
@@ -65,8 +83,6 @@ fun BottomBar() {
                     .size(40.dp)
                     .clickable { scope.launch(Dispatchers.IO) { isFileOpenDialogOpen = true } }
             )
-
-            var message by remember { mutableStateOf("") }
 
             if(isFileOpenDialogOpen) {
                 ImageOpenDialog { file ->

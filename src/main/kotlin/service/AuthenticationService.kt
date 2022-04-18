@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.StateFlow
 import model.User
 import model.toUserDTO
 import util.NetworkResult
+import java.io.File
+import java.util.*
 
 class AuthenticationService(
     private val client: HttpClient
@@ -65,6 +67,12 @@ class AuthenticationService(
     }
 
     suspend fun register(username: String, email: String, password: String, image: String): NetworkResult<Boolean> {
+
+        val imageString = image.ifBlank {
+            val imageBytes = File("./src/main/resources/kotlin_logo.png").readBytes()
+            Base64.getEncoder().encodeToString(imageBytes)
+        }
+
         try {
             val response: HttpResponse = client.submitForm(
                 url = "$BASE_URL/register",
@@ -72,7 +80,7 @@ class AuthenticationService(
                     append("username", username)
                     append("email", email)
                     append("password", password)
-                    append("image", image)
+                    append("image", imageString)
                 }
             )
 
@@ -95,7 +103,7 @@ class AuthenticationService(
                 client.cookies("$BASE_URL/login")[0]
             }
 
-            if(response.status == HttpStatusCode.OK) {
+            if (response.status == HttpStatusCode.OK) {
                 _authenticated.emit(false)
                 return NetworkResult.Success(true)
             }
