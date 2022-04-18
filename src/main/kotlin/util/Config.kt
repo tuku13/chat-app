@@ -19,8 +19,8 @@ object Config {
             val properties = Properties()
 
             properties.load(configFile.inputStream())
-            host = properties.getProperty("server_host").also { println(it) }
-            port = properties.getProperty("server_port").toInt().also { println(it) }
+            host = properties.getProperty("server_host")
+            port = properties.getProperty("server_port").toInt()
         } catch (e: Exception) {
             println("Config file not found 'src/main/resources/server.conf'")
             println(e)
