@@ -21,7 +21,7 @@ class WebSocketService(private val client: HttpClient) {
 
     suspend fun join(roomId: String) {
         close()
-        client.webSocket(method = HttpMethod.Get, host = "0.0.0.0", port = 9090, path = "/chat/room/$roomId") {
+        client.webSocket(method = HttpMethod.Get, host = "vm.niif.cloud.bme.hu", port = 6661, path = "/chat/room/$roomId") {
             socket = this
             incoming.consumeEach { frame ->
                 when (frame) {
