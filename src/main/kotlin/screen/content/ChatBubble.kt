@@ -3,13 +3,18 @@ package screen.content
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -84,12 +89,21 @@ fun ChatBubble(message: Message) {
                                 )
                             }
                             else -> {
-                                Text(
-                                    text = message.content,
-                                    fontSize = 14.sp,
-                                    color = theme.value.chatText,
-                                    modifier = Modifier.padding(horizontal = 8.dp)
-                                )
+                                CompositionLocalProvider(
+                                    LocalTextSelectionColors provides TextSelectionColors(
+                                        handleColor = Color.Black.copy(alpha = 0.2f),
+                                        backgroundColor = Color.Black.copy(alpha = 0.2f)
+                                    )
+                                ) {
+                                    SelectionContainer {
+                                        Text(
+                                            text = message.content,
+                                            fontSize = 14.sp,
+                                            color = theme.value.chatText,
+                                            modifier = Modifier.padding(horizontal = 8.dp).padding(bottom = 8.dp)
+                                        )
+                                    }
+                                }
                             }
                         }
 

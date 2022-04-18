@@ -23,6 +23,7 @@ import screen.authentication.InputTextField
 import screen.sidebar.ColoredButton
 import service.ThemeService
 import java.io.File
+import java.io.FilenameFilter
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -62,7 +63,7 @@ fun ImageOpenDialog(
             ) {
                 val children = file.listFiles().filter {
                     it.isDirectory ||
-                            it.name.endsWith(".jpg", ignoreCase = true) ||
+                            it.name.endsWith(".png", ignoreCase = true) ||
                             it.name.endsWith(".jpg", ignoreCase = true) ||
                             it.name.endsWith(".webp", ignoreCase = true) ||
                             it.name.endsWith(".gif", ignoreCase = true)
