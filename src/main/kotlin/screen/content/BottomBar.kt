@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import screen.dialog.ImageOpenDialog
+import screen.main.MainViewModel
 import service.ThemeService
 import service.WebSocketService
 
@@ -44,6 +45,7 @@ fun BottomBar() {
 
     val themeService: ThemeService by di.instance()
     val webSocketService: WebSocketService by di.instance()
+    val viewModel: MainViewModel by di.instance()
 
     val theme = themeService.theme.collectAsState()
 
@@ -60,6 +62,7 @@ fun BottomBar() {
                     val messageText = message
                     scope.launch {
                         webSocketService.sendMessage(messageText)
+                        viewModel.refreshRooms()
                     }
                     message = ""
                     return@onKeyEvent true
