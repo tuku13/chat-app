@@ -1,7 +1,5 @@
 package dto
 
-import BASE_URL
-import di.DIContainer
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.cookies.*
@@ -9,8 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.serialization.Serializable
 import model.Room
-import org.kodein.di.instance
-import service.ImageService
+import util.Config
 
 @Serializable
 data class RoomDTO(
@@ -21,8 +18,8 @@ data class RoomDTO(
 )
 
 suspend fun RoomDTO.toRoom(client: HttpClient): Room {
-    val roomResponse: HttpResponse = client.get("$BASE_URL/message/room/${id}") {
-        client.cookies("$BASE_URL/login")[0]
+    val roomResponse: HttpResponse = client.get("${Config.baseUrl}/message/room/${id}") {
+        client.cookies("${Config.baseUrl}/login")[0]
     }
     val messageDTOs: List<MessageDTO> = roomResponse.body()
     val messages = messageDTOs.map { it.toMessage() }

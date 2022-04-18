@@ -6,14 +6,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import screen.content.ContentScreen
 import screen.sidebar.CollapsedSideBar
 import screen.sidebar.FullSizeSideBar
 import theme.Theme
-import java.lang.Thread.sleep
 
 @Composable
 fun MainScreen(

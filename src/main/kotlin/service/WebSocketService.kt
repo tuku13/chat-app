@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import model.Message
+import util.Config
 
 class WebSocketService(private val client: HttpClient) {
     private val _messages: MutableStateFlow<List<Message>> = MutableStateFlow(emptyList())
@@ -21,7 +22,7 @@ class WebSocketService(private val client: HttpClient) {
 
     suspend fun join(roomId: String) {
         close()
-        client.webSocket(method = HttpMethod.Get, host = "vm.niif.cloud.bme.hu", port = 6661, path = "/chat/room/$roomId") {
+        client.webSocket(method = HttpMethod.Get, host = Config.host.split("://")[1], port = Config.port, path = "/chat/room/$roomId") {
             socket = this
             incoming.consumeEach { frame ->
                 when (frame) {
@@ -38,7 +39,6 @@ class WebSocketService(private val client: HttpClient) {
                             println(e.message)
                         }
 
-                        println(text)
                     }
                     else -> {}
                 }

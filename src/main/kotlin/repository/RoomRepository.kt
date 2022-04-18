@@ -1,6 +1,5 @@
 package repository
 
-import BASE_URL
 import dto.RoomDTO
 import dto.toRoom
 import io.ktor.client.*
@@ -14,6 +13,7 @@ import io.ktor.http.*
 import model.Room
 import model.User
 import service.AuthenticationService
+import util.Config
 import util.NetworkResult
 
 class RoomRepository(
@@ -22,8 +22,8 @@ class RoomRepository(
 ) {
     suspend fun getRooms(): List<Room> {
         return try {
-            val response: HttpResponse = client.get("$BASE_URL/rooms") {
-                client.cookies("$BASE_URL/login")[0]
+            val response: HttpResponse = client.get("${Config.baseUrl}/rooms") {
+                client.cookies("${Config.baseUrl}/login")[0]
             }
 
             val roomDTOs: List<RoomDTO> = response.body()
@@ -40,11 +40,11 @@ class RoomRepository(
     }
 
     suspend fun createGroup(members: List<String>, roomName: String): NetworkResult<Boolean> {
-        val cookie = client.cookies("$BASE_URL/login")[0]
+        val cookie = client.cookies("${Config.baseUrl}/login")[0]
 
         try {
             val response: HttpResponse = client.submitForm(
-                url = "$BASE_URL/create/room",
+                url = "${Config.baseUrl}/create/room",
                 formParameters = Parameters.build {
                     append("creator", authenticationService.userId)
                     append("members", members.joinToString (separator = "," ))
@@ -76,8 +76,8 @@ class RoomRepository(
 
     suspend fun joinGroup(roomId: String): NetworkResult<Boolean> {
         try {
-            val response = client.get("$BASE_URL/join/room/$roomId") {
-                client.cookies("$BASE_URL/login")[0]
+            val response = client.get("${Config.baseUrl}/join/room/$roomId") {
+                client.cookies("${Config.baseUrl}/login")[0]
             }
 
             if(response.status == HttpStatusCode.OK) {
@@ -96,8 +96,8 @@ class RoomRepository(
 
     suspend fun leaveGroup(roomId: String): NetworkResult<Boolean> {
         try {
-            val response = client.get("$BASE_URL/leave/room/$roomId") {
-                client.cookies("$BASE_URL/login")[0]
+            val response = client.get("${Config.baseUrl}/leave/room/$roomId") {
+                client.cookies("${Config.baseUrl}/login")[0]
             }
 
             if(response.status == HttpStatusCode.OK) {

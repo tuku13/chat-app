@@ -46,6 +46,7 @@ fun FullSizeSideBar(
             .fillMaxHeight()
             .background(theme.background)
             .border(BorderStroke(1.dp, color = theme.border))
+            .sizeIn(minWidth = 328.dp)
     ) {
 
         SearchBar(

@@ -1,6 +1,6 @@
 package service
 
-import BASE_URL
+
 import dto.UserDTO
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -10,6 +10,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import model.User
 import model.toUserDTO
+import util.Config
 import util.NetworkResult
 
 class UserService(
@@ -18,7 +19,7 @@ class UserService(
     suspend fun findUser(name: String, email: String): NetworkResult<List<User>> {
         try {
             val response: HttpResponse = client.submitForm(
-                url = "$BASE_URL/user",
+                url = "${Config.baseUrl}/user",
                 formParameters = Parameters.build {
                     append("name", name)
                     append("email", email)

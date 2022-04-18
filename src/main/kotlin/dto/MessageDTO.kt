@@ -1,6 +1,5 @@
 package dto
 
-import BASE_URL
 import di.DIContainer
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -11,6 +10,7 @@ import model.Message
 import model.toUserDTO
 import org.kodein.di.instance
 import service.AuthenticationService
+import util.Config
 
 @Serializable
 data class MessageDTO(
@@ -30,7 +30,7 @@ suspend fun MessageDTO.toMessage(): Message {
     var senderName = ""
 
     try {
-        val userDTO: UserDTO = client.post("$BASE_URL/user/${senderId}").body()
+        val userDTO: UserDTO = client.post("${Config.baseUrl}/user/${senderId}").body()
 
         senderName = userDTO.toUserDTO().name
 

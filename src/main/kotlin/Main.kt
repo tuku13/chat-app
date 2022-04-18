@@ -15,13 +15,12 @@ import screen.authentication.AuthenticationScreen
 import screen.main.MainScreen
 import service.AuthenticationService
 import service.ThemeService
-
-//const val BASE_URL: String = "http://0.0.0.0:9090"
-const val BASE_URL: String = "http://vm.niif.cloud.bme.hu:6661"
+import util.Config
 
 @Composable
 @Preview
 fun App() = withDI(DIContainer.di) {
+
     val authenticationService: AuthenticationService by DIContainer.di.instance()
     val themeService: ThemeService by DIContainer.di.instance()
 
@@ -42,6 +41,8 @@ fun App() = withDI(DIContainer.di) {
 }
 
 fun main() = application {
+    Config.loadConfig()
+
     Window(
         onCloseRequest = ::exitApplication,
         title = "Chat App",

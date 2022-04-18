@@ -22,6 +22,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
 import screen.dialog.ImageOpenDialog
 import image.LocalImage
+import screen.dialog.AlertDialog
 import theme.Theme
 import java.util.*
 
@@ -40,9 +41,11 @@ fun RegisterForm(
         var username by remember { mutableStateOf("") }
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
+        var confirmPassword by remember { mutableStateOf("") }
 
         var imageBase64Encoded by remember { mutableStateOf("") }
         var isFileOpenDialogOpen by remember { mutableStateOf(false) }
+        var isAlertDialogOpen by remember { mutableStateOf(false) }
 
         Card(
             elevation = 1.dp,
@@ -87,6 +90,14 @@ fun RegisterForm(
                     label = "Password"
                 )
 
+                InputTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    keyboardType = KeyboardType.Password,
+                    label = "Password again"
+                )
+
                 Row(
                     modifier = Modifier.padding(bottom = 16.dp).background(theme.background),
                     verticalAlignment = Alignment.CenterVertically,
@@ -121,19 +132,32 @@ fun RegisterForm(
 
                 }
 
-                if(isFileOpenDialogOpen) {
+                if (isFileOpenDialogOpen) {
                     ImageOpenDialog { file ->
                         isFileOpenDialogOpen = false
-                        if(file != null) {
+                        if (file != null) {
                             imageBase64Encoded = Base64.getEncoder().encodeToString(file.readBytes())
                         }
                     }
                 }
 
+                if (isAlertDialogOpen) {
+                    AlertDialog(
+                        onCloseRequest = { isAlertDialogOpen = false },
+                        text = "Passwords don't match."
+                    )
+                }
+
                 Button(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally),
-                    onClick = { onSubmit(username, email, password, imageBase64Encoded) },
+                    onClick = {
+                        if (password == confirmPassword) {
+                            onSubmit(username, email, password, imageBase64Encoded)
+                        } else {
+                            isAlertDialogOpen = true
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = theme.green,
                         contentColor = theme.title

@@ -1,6 +1,6 @@
 package service
 
-import BASE_URL
+
 import dto.UserDTO
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -9,6 +9,7 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import util.Config
 import util.sessionCookie
 
 class ImageService(
@@ -21,7 +22,7 @@ class ImageService(
         val cookie = client.sessionCookie()
 
         try {
-            val response: HttpResponse = client.submitForm(url = "$BASE_URL/user/${userId}") {
+            val response: HttpResponse = client.submitForm(url = "${Config.baseUrl}/user/${userId}") {
                 cookie
             }
 

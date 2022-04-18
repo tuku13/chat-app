@@ -1,6 +1,5 @@
 package service
 
-import BASE_URL
 import dto.UserDTO
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -13,7 +12,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import model.User
-import model.toUserDTO
+import util.Config
 import util.NetworkResult
 import java.io.File
 import java.util.*
@@ -37,7 +36,7 @@ class AuthenticationService(
     suspend fun login(email: String, password: String): NetworkResult<Boolean> {
         try {
             val response: HttpResponse = client.submitForm(
-                url = "$BASE_URL/login",
+                url = "${Config.baseUrl}/login",
                 formParameters = Parameters.build {
                     append("email", email)
                     append("password", password)
@@ -45,12 +44,10 @@ class AuthenticationService(
             )
 
             if (response.status.value == 200) {
-                println(authenticated.value)
                 _authenticated.emit(true)
-                println(authenticated.value)
                 _userId = response.body()
 
-                val userDTO: UserDTO = client.post("$BASE_URL/user/$_userId").body()
+                val userDTO: UserDTO = client.post("${Config.baseUrl}/user/$_userId").body()
                 _user.emit(userDTO.toUser())
 
                 return NetworkResult.Success(true)
@@ -75,7 +72,7 @@ class AuthenticationService(
 
         try {
             val response: HttpResponse = client.submitForm(
-                url = "$BASE_URL/register",
+                url = "${Config.baseUrl}/register",
                 formParameters = Parameters.build {
                     append("username", username)
                     append("email", email)
@@ -88,8 +85,10 @@ class AuthenticationService(
                 return NetworkResult.Success(true)
             }
 
-        } catch (e: Exception) {
-            return NetworkResult.Error(e.message, e)
+        } catch (e: ResponseException) {
+            return NetworkResult.Error(
+                message = e.response.bodyAsText(),
+                exception = e)
         }
         return NetworkResult.Error(
             message = "Unknown error",
@@ -99,8 +98,8 @@ class AuthenticationService(
 
     suspend fun logout(): NetworkResult<Boolean> {
         try {
-            val response: HttpResponse = client.get("$BASE_URL/logout") {
-                client.cookies("$BASE_URL/login")[0]
+            val response: HttpResponse = client.get("${Config.baseUrl}/logout") {
+                client.cookies("${Config.baseUrl}/login")[0]
             }
 
             if (response.status == HttpStatusCode.OK) {
@@ -108,11 +107,10 @@ class AuthenticationService(
                 return NetworkResult.Success(true)
             }
 
-        } catch (e: Exception) {
+        } catch (e: ResponseException) {
             return NetworkResult.Error(
-                message = e.message,
-                exception = e
-            )
+                message = e.response.bodyAsText(),
+                exception = e)
         }
 
         return NetworkResult.Success(false)
