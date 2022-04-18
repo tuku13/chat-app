@@ -10,8 +10,8 @@ data class User(
 )
 
 fun UserDTO.toUserDTO() = User(
-    id = id ?: "",
-    name = name ?: "",
-    email = email ?: "",
-    image = image ?: ""
+    id = id,
+    name = name,
+    email = email,
+    image = image
 )
